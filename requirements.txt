@@ -1,0 +1,7 @@
+streamlit
+requests
+debugpy
+flask
+flask_sqlalchemy
+psycopg2-binary
+openai

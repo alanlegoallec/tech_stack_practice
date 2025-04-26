@@ -1,0 +1,22 @@
+# Use official Python image
+FROM python:3.11
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy rest of the code
+COPY . .
+
+EXPOSE 5678
+
+# Run the app
+# Default
+CMD ["python", "app.py"]
+# Idle command to keep the container running, used when connecting with the vscode debugger from within the container
+# CMD ["tail", "-f", "/dev/null"]
+# Used to run the debugger by connecting to the container from the local machine
+# CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:${FLASK_DEBUG_PORT}", "--wait-for-client", "app.py"]

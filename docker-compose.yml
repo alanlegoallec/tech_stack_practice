@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  backend-app:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "${FLASK_PORT}:${FLASK_PORT}"
+      - "${FLASK_DEBUG_PORT}:5678"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - FLASK_PORT=${FLASK_PORT}
+
+  frontend-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
+      - "${STREAMLIT_DEBUG_PORT}:5678"
+    depends_on:
+      - backend-app
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
