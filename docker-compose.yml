@@ -37,4 +37,9 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data  # Persistent volume
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Schema & data init
+      - ./data:/docker-entrypoint-initdb.d/data  # Mount CSV directory
+
+volumes:
+  postgres_data:  # Declare named volume for PostgreSQL data
