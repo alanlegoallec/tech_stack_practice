@@ -1,9 +1,6 @@
 services:
-  backend-app-debug:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: my-backend-app-debug:latest
+  backend-app:
+    entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
     command:
       [
         "python",
@@ -21,26 +18,13 @@ services:
         "--port",
         "5001",
       ]
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - API_PORT=${API_PORT}
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
-      - "5002:5001"
-      - "${API_VSCODE_DEBUGGER_PORT}:5678"
+      - "5002:5001" # Map port 5001 inside the container to 5002 on the host
+      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
     profiles: ["debug"]
 
   frontend-app:
-    depends_on:
-      - backend-app-debug
-    profiles: ["debug"]
-
-  db:
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
+      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Expose debugger for frontend if needed
     profiles: ["debug"]
