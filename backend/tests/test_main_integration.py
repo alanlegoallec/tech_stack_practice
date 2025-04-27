@@ -10,7 +10,7 @@ from backend.ds import Base, RandomNumber
 # Use the same DB URL as your app (from env vars)
 db_user = os.environ["POSTGRES_USER"]
 db_password = os.environ["POSTGRES_PASSWORD"]
-db_name = os.environ["POSTGRES_DB"]
+db_name = os.environ["POSTGRES_DB_TEST"]
 db_host = os.environ.get("DB_HOST", "db")
 db_port = os.environ.get("DB_PORT", 5432)
 DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
