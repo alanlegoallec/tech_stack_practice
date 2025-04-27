@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   backend-app:
     build:
@@ -10,7 +9,7 @@ services:
         condition: service_healthy
     ports:
       - "${API_PORT}:${API_PORT}" # Main API port
-      - "${API_DEBUG_PORT}:5678" # Debugger port
+      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -19,24 +18,32 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - API_PORT=${API_PORT}
-    # # Used for debugging
-    # command:
-    #   [
-    #     "python",
-    #     "-Xfrozen_modules=off",
-    #     "-m",
-    #     "debugpy",
-    #     "--listen",
-    #     "0.0.0.0:5678",
-    #     "--wait-for-client",
-    #     "-m",
-    #     "uvicorn",
-    #     "backend.main:app",
-    #     "--host",
-    #     "0.0.0.0",
-    #     "--port",
-    #     "5001",
-    #   ]
+    profiles: ["prod", "dev"]
+
+  backend-app-debug:
+    extends:
+      service: backend-app
+    command:
+      [
+        "python",
+        "-Xfrozen_modules=off",
+        "-m",
+        "debugpy",
+        "--listen",
+        "0.0.0.0:5678",
+        "--wait-for-client",
+        "-m",
+        "uvicorn",
+        "backend.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5001",
+      ]
+    ports:
+      - "5002:5001"
+      - "${API_VSCODE_DEBUGGER_PORT}:5678"
+    profiles: ["debug"]
 
   frontend-app:
     build:
@@ -44,9 +51,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
-      - "${STREAMLIT_DEBUG_PORT}:5678"
+      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678"
     depends_on:
       - backend-app
+    profiles: ["prod", "dev"]
 
   db:
     image: postgres:16
@@ -67,6 +75,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    profiles: ["prod", "dev", "test"]
 
   tests:
     build:
@@ -84,10 +93,10 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${API_TEST_DEBUG_PORT}:5678"
+      - "${API_DEBUG_PROFILE_PORT}:5001"
+      - "${API_TEST_VSCODE_DEBUGGER_PORT}:5678"
     command: ["pytest", "tests/test_main_integration.py"]
-    # Add debugpy if you want to debug tests
-    # command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "pytest", "tests/test_main_integration.py"]
+    profiles: ["test"]
 
 volumes:
   postgres_data:

@@ -11,10 +11,15 @@ authors = [
 ]
 dependencies = [
     "streamlit",
-    "requests",
-    "debugpy"
+    "requests"
 ]
 requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "debugpy",
+    "pytest"
+]
 
 [project.scripts]
 # Optional: If you want a CLI entry point, not needed for Streamlit

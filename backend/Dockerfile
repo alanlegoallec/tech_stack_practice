@@ -12,25 +12,21 @@ RUN apt-get update && \
 # Install Python build tools
 RUN pip install --upgrade pip setuptools wheel
 
-# Copy only requirements and pyproject.toml first (for better Docker cache)
-COPY requirements.txt pyproject.toml ./
+# Copy only pyproject.toml first (for better Docker cache)
+COPY pyproject.toml ./
 
-# Install Python dependencies (from requirements.txt and/or pyproject.toml)
-RUN pip install --no-cache-dir -r requirements.txt
+# Install your backend and its dependencies
+RUN pip install .
 
 # Copy the rest of the backend project
 COPY . .
-
-# Install your backend as a package (editable mode for dev, normal for prod)
-RUN pip install --no-cache-dir .
 
 # Remove any __pycache__ folders that might have been copied in
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
 # Expose ports
-EXPOSE 8501
+EXPOSE 5001
 EXPOSE 5678
-
 
 RUN chmod +x wait-for-db.sh
 
