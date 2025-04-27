@@ -19,24 +19,24 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - API_PORT=${API_PORT}
-    # Used for debugging
-    command:
-      [
-        "python",
-        "-Xfrozen_modules=off",
-        "-m",
-        "debugpy",
-        "--listen",
-        "0.0.0.0:5678",
-        "--wait-for-client",
-        "-m",
-        "uvicorn",
-        "backend.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "5001",
-      ]
+    # # Used for debugging
+    # command:
+    #   [
+    #     "python",
+    #     "-Xfrozen_modules=off",
+    #     "-m",
+    #     "debugpy",
+    #     "--listen",
+    #     "0.0.0.0:5678",
+    #     "--wait-for-client",
+    #     "-m",
+    #     "uvicorn",
+    #     "backend.main:app",
+    #     "--host",
+    #     "0.0.0.0",
+    #     "--port",
+    #     "5001",
+    #   ]
 
   frontend-app:
     build:

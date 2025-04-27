@@ -27,7 +27,9 @@ RUN pip install --no-cache-dir .
 # Remove any __pycache__ folders that might have been copied in
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
-EXPOSE 5001 5678
+# Expose ports
+EXPOSE 8501
+EXPOSE 5678
 
 
 RUN chmod +x wait-for-db.sh
@@ -35,10 +37,5 @@ RUN chmod +x wait-for-db.sh
 # Normal startup
 CMD ["./wait-for-db.sh", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5001"]
 
-# For debugging with debugpy (uncomment when needed)
-# CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5001"]
-
 # Idle command to keep the container running, used when connecting with the vscode debugger from within the container
 # CMD ["tail", "-f", "/dev/null"]
-# Used to run the debugger by connecting to the container from the local machine
-# CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:${FLASK_DEBUG_PORT}", "--wait-for-client", "app.py"]
