@@ -1,11 +1,12 @@
 import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from backend.main import app, get_db
 from backend.ds import Base, RandomNumber
+from backend.main import app, get_db
 
 # Use the same DB URL as your app (from env vars)
 db_user = os.environ["POSTGRES_USER"]
@@ -21,6 +22,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 # Create tables (if not already created)
 Base.metadata.create_all(bind=engine)
 
+
 # Dependency override for tests
 def override_get_db():
     db = TestingSessionLocal()
@@ -29,9 +31,11 @@ def override_get_db():
     finally:
         db.close()
 
+
 app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
+
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_db():
@@ -47,6 +51,7 @@ def setup_db():
     db.query(RandomNumber).delete()
     db.commit()
     db.close()
+
 
 def test_multiply_with_real_db():
     payload = {"number": 5.0}

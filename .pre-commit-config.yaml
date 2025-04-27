@@ -1,0 +1,65 @@
+# .pre-commit-config.yaml
+# Pre-commit configuration for Python and web projects
+# - Python: formatting, linting, security, modernization
+# - General: whitespace, file endings, YAML, large files
+# - Web: Prettier for JS/CSS/HTML/Markdown
+
+repos:
+  # -----------------------------
+  # General code hygiene hooks
+  # -----------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace # Remove trailing whitespace
+      - id: end-of-file-fixer # Ensure file ends with a newline
+      - id: check-yaml # Validate YAML syntax
+      - id: check-added-large-files # Prevent large files from being committed
+      - id: check-ast # Ensure Python files parse (syntax check)
+      - id: debug-statements # Prevent print()/pdb/debug code
+
+  # -----------------------------
+  # Python code quality & security
+  # -----------------------------
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        language_version: python3 # Import sorter
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        language_version: python3 # Python code formatter
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        language_version: python3 # Linter
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+        args: [--py311-plus] # Upgrade syntax to Python 3.11+
+        language_version: python3
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        entry: bandit -r . --skip B101
+        pass_filenames: false
+
+  # -----------------------------
+  # Web & markup file formatting
+  # -----------------------------
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v3.1.0" # Use the latest stable tag available
+    hooks:
+      - id: prettier
+        files: "\\.(md|markdown|yaml|yml)$"
+# End of .pre-commit-config.yaml
