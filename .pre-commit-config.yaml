@@ -55,6 +55,25 @@ repos:
         pass_filenames: false
 
   # -----------------------------
+  # Python docstring enforcement
+  # -----------------------------
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: pydocstyle (docstring style and presence)
+        language_version: python3
+        args: ["--convention=google"] # Uncomment to enforce Google style
+
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.5.0
+    hooks:
+      - id: interrogate
+        name: interrogate (docstring coverage)
+        language_version: python3
+        args: ["--fail-under=80"] # Require at least 80% docstring coverage
+
+  # -----------------------------
   # Web & markup file formatting
   # -----------------------------
   - repo: https://github.com/pre-commit/mirrors-prettier
