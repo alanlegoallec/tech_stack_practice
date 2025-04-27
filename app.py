@@ -1,38 +1,44 @@
-# # app.py
-
 import os
-from flask import Flask, request, jsonify
-from backend import db, multiply_with_random
+from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
-# Read variables from environment
+from backend import Base, RandomNumber, multiply_with_random
+
+# Database setup
 db_user = os.environ.get("POSTGRES_USER")
 db_password = os.environ.get("POSTGRES_PASSWORD")
 db_name = os.environ.get("POSTGRES_DB")
-db_host = os.environ.get("DB_HOST", "db")  # default to 'db'
+db_host = os.environ.get("DB_HOST", "db")
 db_port = os.environ.get("DB_PORT", 5432)
-flask_port = int(os.environ.get("FLASK_PORT", 5001))
+DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
-)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base.metadata.create_all(bind=engine)
 
-db.init_app(app)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-@app.route("/multiply", methods=["POST"])
-def multiply():
-    data = request.get_json()
-    number = data.get("number")
-    if number is None:
-        return jsonify({"error": "Missing 'number' in request"}), 400
-    # Ensure we are in app context for DB access
-    with app.app_context():
-        try:
-            result, multiplier, explanation = multiply_with_random(number)
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-    return jsonify({"result": result, "multiplier": multiplier, "explanation": explanation})
+app = FastAPI()
 
-if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=flask_port)
+class MultiplyRequest(BaseModel):
+    number: float
+
+class MultiplyResponse(BaseModel):
+    result: float
+    multiplier: float
+    explanation: str
+
+@app.post("/multiply", response_model=MultiplyResponse)
+def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
+    try:
+        result, multiplier, explanation = multiply_with_random(request.number, db)
+        return MultiplyResponse(result=result, multiplier=multiplier, explanation=explanation)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

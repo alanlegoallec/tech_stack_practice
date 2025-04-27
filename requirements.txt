@@ -1,7 +1,10 @@
 streamlit
 requests
 debugpy
-flask
-flask_sqlalchemy
+fastapi
+uvicorn
+sqlalchemy
 psycopg2-binary
 openai
+pydantic
+starlette

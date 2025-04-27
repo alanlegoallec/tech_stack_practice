@@ -2,13 +2,14 @@ version: "3.9"
 services:
   backend-app:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     build:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - "${FLASK_PORT}:${FLASK_PORT}"
-      - "${FLASK_DEBUG_PORT}:5678"
+      - "${API_PORT}:${API_PORT}"
+      - "${API_DEBUG_PORT}:5678"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -16,7 +17,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
-      - FLASK_PORT=${FLASK_PORT}
+      - API_PORT=${API_PORT}
 
   frontend-app:
     build:
@@ -40,6 +41,11 @@ services:
       - postgres_data:/var/lib/postgresql/data  # Persistent volume
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Schema & data init
       - ./data:/docker-entrypoint-initdb.d/data  # Mount CSV directory
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:  # Declare named volume for PostgreSQL data
