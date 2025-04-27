@@ -2,10 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including OpenSSL development headers
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python build tools
 RUN pip install --upgrade pip setuptools wheel
@@ -30,7 +32,6 @@ EXPOSE 5001
 RUN chmod +x wait-for-db.sh
 
 CMD ["./wait-for-db.sh", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5001"]
-
 
 # Idle command to keep the container running, used when connecting with the vscode debugger from within the container
 # CMD ["tail", "-f", "/dev/null"]
