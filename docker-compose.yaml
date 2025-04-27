@@ -1,4 +1,3 @@
-# Use YAML anchors for backend service config to avoid duplication
 x-backend-app-base: &backend-app-base
   build:
     context: ./backend
@@ -20,34 +19,9 @@ services:
     <<: *backend-app-base
     image: my-backend-app:latest
     ports:
-      - "${API_PORT}:${API_PORT}" # Main API port
-      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port
-    profiles: ["prod", "dev"]
-
-  backend-app-debug:
-    <<: *backend-app-base
-    image: my-backend-app-debug:latest
-    command:
-      [
-        "python",
-        "-Xfrozen_modules=off",
-        "-m",
-        "debugpy",
-        "--listen",
-        "0.0.0.0:5678",
-        "--wait-for-client",
-        "-m",
-        "uvicorn",
-        "backend.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "5001",
-      ]
-    ports:
-      - "5002:5001"
+      - "${API_PORT}:${API_PORT}"
       - "${API_VSCODE_DEBUGGER_PORT}:5678"
-    profiles: ["debug"]
+    profiles: ["prod", "dev"]
 
   frontend-app:
     build:
@@ -80,27 +54,6 @@ services:
       timeout: 5s
       retries: 5
     profiles: ["prod", "dev", "test"]
-
-  tests:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: my-backend-app:latest
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB_TEST=${POSTGRES_DB_TEST}
-      - DB_HOST=db
-      - DB_PORT=5432
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "${API_DEBUG_PROFILE_PORT}:5001"
-      - "${API_TEST_VSCODE_DEBUGGER_PORT}:5678"
-    command: ["pytest", "tests/test_main_integration.py"]
-    profiles: ["test"]
 
 volumes:
   postgres_data:

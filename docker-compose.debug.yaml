@@ -1,0 +1,46 @@
+services:
+  backend-app-debug:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: my-backend-app-debug:latest
+    command:
+      [
+        "python",
+        "-Xfrozen_modules=off",
+        "-m",
+        "debugpy",
+        "--listen",
+        "0.0.0.0:5678",
+        "--wait-for-client",
+        "-m",
+        "uvicorn",
+        "backend.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5001",
+      ]
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - API_PORT=${API_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5002:5001"
+      - "${API_VSCODE_DEBUGGER_PORT}:5678"
+    profiles: ["debug"]
+
+  frontend-app:
+    depends_on:
+      - backend-app-debug
+    profiles: ["debug"]
+
+  db:
+    profiles: ["debug"]
