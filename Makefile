@@ -1,6 +1,9 @@
 # Target to start containers in debug mode
-debug:
-    docker compose -f docker-compose.yaml -f docker-compose.debug.yaml --profile debug up --build
+debug-remote:
+    docker compose -f docker-compose.yaml -f docker-compose.debug-remote.yaml --profile debug-remote up --build
+
+debug-from-container:
+    docker compose -f docker-compose.yaml -f docker-compose.debug-internal.yaml --profile debug-internal up --build
 
 # Target to start containers in production mode
 prod:
