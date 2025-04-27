@@ -1,28 +1,32 @@
+# Use YAML anchors for backend service config to avoid duplication
+x-backend-app-base: &backend-app-base
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  environment:
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=${POSTGRES_DB}
+    - DB_HOST=${DB_HOST}
+    - DB_PORT=${DB_PORT}
+    - API_PORT=${API_PORT}
+  depends_on:
+    db:
+      condition: service_healthy
+
 services:
   backend-app:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    <<: *backend-app-base
     image: my-backend-app:latest
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
       - "${API_PORT}:${API_PORT}" # Main API port
       - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - API_PORT=${API_PORT}
     profiles: ["prod", "dev"]
 
   backend-app-debug:
-    extends:
-      service: backend-app
+    <<: *backend-app-base
+    image: my-backend-app-debug:latest
     command:
       [
         "python",
