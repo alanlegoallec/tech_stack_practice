@@ -4,8 +4,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from main import app, get_db
-from ds import Base, RandomNumber
+from backend.main import app, get_db
+from backend.ds import Base, RandomNumber
 
 # Use the same DB URL as your app (from env vars)
 db_user = os.environ["POSTGRES_USER"]
