@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from backend.backend import Base, RandomNumber, multiply_with_random
+from ds import Base, RandomNumber, multiply_with_random
 
 # --- Database setup function ---
 def setup_database():

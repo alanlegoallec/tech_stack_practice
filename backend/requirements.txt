@@ -7,3 +7,4 @@ pydantic
 starlette
 requests
 debugpy
+pytest
