@@ -1,3 +1,5 @@
+"""Streamlit app."""
+
 import requests
 import streamlit as st
 

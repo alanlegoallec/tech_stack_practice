@@ -1,3 +1,5 @@
+"""Data science logic for the backend."""
+
 import os
 import secrets
 
@@ -11,12 +13,15 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 class RandomNumber(Base):
+    """Model for random numbers."""
+
     __tablename__ = "random_numbers"
     id = Column(Integer, primary_key=True, index=True)
     value = Column(Float, nullable=False)
 
 
 def summarize_product(num1, num2, product):
+    """Use OpenAI API to summarize the product of two numbers."""
     prompt = (
         "Write a short sentence summarizing the product of "
         f"{num1} and {num2}, which equals {product}."

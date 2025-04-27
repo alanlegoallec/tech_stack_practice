@@ -1,3 +1,5 @@
+"""Generate a CSV file with random numbers for testing purposes."""
+
 import pandas as pd
 
 # Data matching your INSERT statements

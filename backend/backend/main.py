@@ -1,3 +1,5 @@
+"""API wrapper around backend logic."""
+
 import logging
 import os
 
@@ -15,6 +17,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # --- Database setup function ---
 def setup_database():
+    """Set up the database connection and session."""
     db_user = os.environ.get("POSTGRES_USER")
     db_password = os.environ.get("POSTGRES_PASSWORD")
     db_name = os.environ.get("POSTGRES_DB")
@@ -37,6 +40,7 @@ if not os.environ.get("UNIT_TESTS"):
 
 # --- Dependency for DB session ---
 def get_db():
+    """Dependency to get a database session."""
     if SessionLocal is None:
         # In unit tests, this will be overridden by dependency_overrides
         raise RuntimeError(
@@ -55,6 +59,7 @@ app = FastAPI(debug=True)
 # --- Global exception handler for logging all unhandled errors ---
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to log unhandled errors."""
     logging.exception(f"Unhandled error at {request.url.path}: {exc}")
     return JSONResponse(
         status_code=500, content={"detail": f"Internal Server Error: {exc}"}
@@ -62,10 +67,14 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 class MultiplyRequest(BaseModel):
+    """Request model for the multiply endpoint."""
+
     number: float
 
 
 class MultiplyResponse(BaseModel):
+    """Response model for the multiply endpoint."""
+
     result: float
     multiplier: float
     explanation: str
@@ -73,6 +82,7 @@ class MultiplyResponse(BaseModel):
 
 @app.post("/multiply", response_model=MultiplyResponse)
 def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
+    """Multiply a number by a random number from the database."""
     print("Random numbers in DB:", db.query(RandomNumber).all())
     try:
         result, multiplier, explanation = multiply_with_random(request.number, db)

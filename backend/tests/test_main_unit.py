@@ -1,3 +1,5 @@
+"""Unit tests for the FastAPI application."""
+
 import os
 
 os.environ["UNIT_TESTS"] = "1"  # noqa: E402
@@ -12,11 +14,13 @@ from backend.backend.main import app, get_db
 
 # Define the override function
 def override_get_db():
+    """Override the get_db dependency for testing."""
     yield MagicMock()
 
 
 @pytest.fixture(autouse=True)
 def db_override():
+    """Override the get_db dependency for testing."""
     # Set the override before each test
     app.dependency_overrides[get_db] = override_get_db
     yield
@@ -28,6 +32,8 @@ client = TestClient(app)
 
 
 def test_multiply_success(monkeypatch):
+    """Test the multiply endpoint with a mocked database."""
+
     # Mock the multiply_with_random function to avoid DB dependency
     def fake_multiply_with_random(number, db):
         return number * 2, 2.0, "Multiplied by 2"
@@ -45,6 +51,7 @@ def test_multiply_success(monkeypatch):
 
 
 def test_multiply_invalid_input():
+    """Test the multiply endpoint with invalid input."""
     payload = {"number": "not_a_number"}
     response = client.post("/multiply", json=payload)
     assert response.status_code == 422  # Unprocessable Entity (validation error)

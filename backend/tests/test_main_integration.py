@@ -1,3 +1,5 @@
+"""Tests for the FastAPI app using a real PostgreSQL database."""
+
 import os
 
 import pytest
@@ -25,6 +27,7 @@ Base.metadata.create_all(bind=engine)
 
 # Dependency override for tests
 def override_get_db():
+    """Override the get_db dependency for testing."""
     db = TestingSessionLocal()
     try:
         yield db
@@ -39,6 +42,7 @@ client = TestClient(app)
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_db():
+    """Set up the test database and clean up after tests."""
     # Clean up and insert a known random number into the test DB
     db = TestingSessionLocal()
     db.query(RandomNumber).delete()  # Clean table for repeatable tests
@@ -54,6 +58,7 @@ def setup_db():
 
 
 def test_multiply_with_real_db():
+    """Test the multiply_with_random function with a real database."""
     payload = {"number": 5.0}
     response = client.post("/multiply", json=payload)
     assert response.status_code == 200
