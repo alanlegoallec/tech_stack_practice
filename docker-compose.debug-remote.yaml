@@ -21,10 +21,10 @@ services:
     ports:
       - "5002:5001" # Map port 5001 inside the container to 5002 on the host
       - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
-    profiles: ["debug"]
+    profiles: ["debug-remote"]
 
   frontend-app:
     ports:
       - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
       - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Expose debugger for frontend if needed
-    profiles: ["debug"]
+    profiles: ["debug-remote"]

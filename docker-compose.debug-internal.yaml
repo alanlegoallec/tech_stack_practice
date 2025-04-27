@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  backend-app:
+    entrypoint: [] # Neutralize the default Dockerfile CMD
+    command: ["tail", "-f", "/dev/null"] # Keep the container running for manual debugging
+    profiles: ["debug-internal"] # This is the custom profile for debugging
+
+  frontend-app:
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
+      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Expose debugger for frontend if needed
+    profiles: ["debug-internal"] # Add profile if needed
