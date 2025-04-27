@@ -2,25 +2,6 @@
   "version": "0.2.0",
   "configurations": [
       {
-          "description": "Flask app - to be run from within the container",
-          "name": "Flask - within", 
-          "type": "python",
-          "request": "launch",
-          "module": "flask",
-          "env": {
-              "FLASK_APP": "app.py",
-              "FLASK_ENV": "development"
-          },
-          "args": [
-              "run",
-              "--no-debugger",
-              "--no-reload",
-              "--host=0.0.0.0",
-              "--port=5001"
-          ],
-          "jinja": true
-      },
-      {
           "description": "Flask app - to be run from outside the container",
           "name": "Flask - outside",
           "type": "python",
@@ -36,21 +17,6 @@
             }
           ]
         },
-        {
-          "description": "UI app - to be run from within the container",
-          "name": "UI - within",
-          "type": "python",
-          "request": "launch",
-          "program": "/usr/local/bin/streamlit",   // or just "streamlit" if in PATH
-          "args": [
-            "run",
-            "streamlit_app.py",
-            "--server.port=8501",
-            "--server.address=0.0.0.0"
-          ],
-          "console": "integratedTerminal",
-          "justMyCode": true
-        }
         {
           "description": "UI app - to be run from outside the container",
           "name": "UI - outside",

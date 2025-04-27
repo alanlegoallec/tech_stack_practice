@@ -16,7 +16,7 @@ COPY wait-for-db.sh .
 RUN chmod +x wait-for-db.sh
 
 # Replace CMD with
-CMD ["./wait-for-db.sh", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5001"]
+CMD ["./wait-for-db.sh", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5001"]
 
 # Idle command to keep the container running, used when connecting with the vscode debugger from within the container
 # CMD ["tail", "-f", "/dev/null"]
