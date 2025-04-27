@@ -8,4 +8,5 @@ starlette
 requests
 debugpy
 pytest
-secrets
+cryptography>=42.0.0  # Modern crypto package
+pyopenssl>=24.0.0    # Explicit OpenSSL bindings if required
