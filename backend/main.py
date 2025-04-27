@@ -4,21 +4,32 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from backend import Base, RandomNumber, multiply_with_random
+from backend.backend import Base, RandomNumber, multiply_with_random
 
-# Database setup
-db_user = os.environ.get("POSTGRES_USER")
-db_password = os.environ.get("POSTGRES_PASSWORD")
-db_name = os.environ.get("POSTGRES_DB")
-db_host = os.environ.get("DB_HOST", "db")
-db_port = os.environ.get("DB_PORT", 5432)
-DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+# --- Database setup function ---
+def setup_database():
+    db_user = os.environ.get("POSTGRES_USER")
+    db_password = os.environ.get("POSTGRES_PASSWORD")
+    db_name = os.environ.get("POSTGRES_DB")
+    db_host = os.environ.get("DB_HOST", "db")
+    db_port = os.environ.get("DB_PORT", 5432)
+    DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base.metadata.create_all(bind=engine)
+    return SessionLocal
 
+# --- Only initialize DB for non-unit-test runs ---
+SessionLocal = None
+if not os.environ.get("UNIT_TESTS"):
+    SessionLocal = setup_database()
+
+# --- Dependency for DB session ---
 def get_db():
+    if SessionLocal is None:
+        # In unit tests, this will be overridden by dependency_overrides
+        raise RuntimeError("Database not initialized. This should be overridden in tests.")
     db = SessionLocal()
     try:
         yield db
