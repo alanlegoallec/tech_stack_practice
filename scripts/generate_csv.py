@@ -1,3 +1,5 @@
+"""Generate a CSV file with random numbers for testing purposes."""
+
 import pandas as pd
 
 # Data matching your INSERT statements
@@ -10,4 +12,4 @@ data = [
 ]
 
 df = pd.DataFrame(data)
-df.to_csv('./data/random_numbers.csv', index=False)
+df.to_csv("./data/random_numbers.csv", index=False)

@@ -3,7 +3,7 @@
   "configurations": [
       {
           "description": "Flask app - to be run from within the container",
-          "name": "Flask - within", 
+          "name": "Flask - within",
           "type": "python",
           "request": "launch",
           "module": "flask",
