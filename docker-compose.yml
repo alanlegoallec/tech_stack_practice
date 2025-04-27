@@ -9,8 +9,8 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${API_PORT}:${API_PORT}"
-      - "${API_DEBUG_PORT}:5678"
+      - "${API_PORT}:${API_PORT}" # Main API port
+      - "${API_DEBUG_PORT}:5678" # Debugger port
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -19,6 +19,24 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - API_PORT=${API_PORT}
+    # Used for debugging
+    command:
+      [
+        "python",
+        "-Xfrozen_modules=off",
+        "-m",
+        "debugpy",
+        "--listen",
+        "0.0.0.0:5678",
+        "--wait-for-client",
+        "-m",
+        "uvicorn",
+        "backend.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5001",
+      ]
 
   frontend-app:
     build:
@@ -55,7 +73,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: my-backend-app:latest
-    command: ["pytest", "tests/test_main_integration.py"]
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -66,6 +83,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "${API_TEST_DEBUG_PORT}:5678"
+    command: ["pytest", "tests/test_main_integration.py"]
+    # Add debugpy if you want to debug tests
+    # command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "pytest", "tests/test_main_integration.py"]
 
 volumes:
   postgres_data:
