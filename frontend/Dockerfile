@@ -10,7 +10,7 @@ COPY pyproject.toml .
 # If you use a build backend like setuptools, also copy setup.cfg or setup.py if present
 
 # Install your package and its dependencies
-RUN pip install .
+RUN pip install .[dev]
 
 # Copy the rest of your frontend code
 COPY . .

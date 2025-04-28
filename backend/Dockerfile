@@ -19,7 +19,7 @@ RUN pip install --upgrade pip setuptools wheel
 COPY pyproject.toml ./
 
 # Install the backend and its dependencies (using pip to install the package)
-RUN pip install .
+RUN pip install .[dev]
 
 # Copy the rest of the backend project (including source code)
 COPY . .
