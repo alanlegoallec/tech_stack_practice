@@ -3,7 +3,7 @@
   "configurations": [
     {
       "description": "FastAPI (Docker) - to be run from outside the container",
-      "name": "FastAPI (Docker attach)",
+      "name": "FastAPI - remote",
       "type": "python",
       "request": "attach",
       "connect": {
@@ -20,7 +20,7 @@
     },
     {
       "description": "UI app - to be run from outside the container",
-      "name": "UI - Docker attach",
+      "name": "UI - remote",
       "type": "python",
       "request": "attach",
       "connect": {
