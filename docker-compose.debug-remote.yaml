@@ -1,30 +1,23 @@
-services:
-  backend-app:
-    entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    command:
-      [
-        "python",
-        "-Xfrozen_modules=off",
-        "-m",
-        "debugpy",
-        "--listen",
-        "0.0.0.0:5678",
-        "--wait-for-client",
-        "-m",
-        "uvicorn",
-        "backend.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "5001",
-      ]
-    ports:
-      - "5002:5001" # Map port 5001 inside the container to 5002 on the host
-      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
-    profiles: ["debug-remote"]
-
-  frontend-app:
-    ports:
-      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
-      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Expose debugger for frontend if needed
-    profiles: ["debug-remote"]
+backend-app:
+  entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
+  command:
+    [
+      "python",
+      "-Xfrozen_modules=off",
+      "-m",
+      "debugpy",
+      "--listen",
+      "0.0.0.0:5678",
+      "--wait-for-client",
+      "-m",
+      "uvicorn",
+      "backend.main:app",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "5001",
+    ]
+  ports:
+    - "5002:5001" # Map port 5001 inside the container to 5002 on the host (backend API)
+    - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
+  profiles: ["debug-remote"]
