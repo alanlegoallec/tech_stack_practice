@@ -20,19 +20,20 @@
     },
     {
       "description": "UI app - to be run from outside the container",
-      "name": "UI - outside",
+      "name": "UI - Docker attach",
       "type": "python",
       "request": "attach",
       "connect": {
         "host": "localhost",
-        "port": 5680
+        "port": 5680  // Connect to the frontend debugger
       },
       "pathMappings": [
         {
-          "localRoot": "${workspaceFolder}",
+          "localRoot": "${workspaceFolder}/frontend",
           "remoteRoot": "/app"
         }
-      ]
-    },
+      ],
+      "justMyCode": false
+    }
   ]
 }
