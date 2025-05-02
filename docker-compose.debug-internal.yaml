@@ -1,0 +1,30 @@
+services:
+  backend-app:
+    entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
+    command:
+      [
+        "bash",
+        "-c",
+        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+      ]
+    environment:
+      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
+    ports:
+      - "5002:5001" # Port for backend API (different port to avoid conflict with prod)
+      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
+    profiles: ["debug-internal"]
+
+  frontend-app:
+    entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
+    command:
+      [
+        "bash",
+        "-c",
+        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+      ]
+    environment:
+      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
+    ports:
+      - "8502:8501" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
+      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for frontend
+    profiles: ["debug-internal"]

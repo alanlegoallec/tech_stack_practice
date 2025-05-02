@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frontend"
+version = "0.1.0"
+description = "Streamlit frontend for random number multiplier"
+authors = [
+    { name="Your Name", email="your@email.com" }
+]
+dependencies = [
+    "streamlit",
+    "requests"
+]
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = [
+    "debugpy",
+    "pytest"
+]
+
+[project.scripts]
+# Optional: If you want a CLI entry point, not needed for Streamlit
+# my_frontend_app = "frontend.streamlit_app:main"

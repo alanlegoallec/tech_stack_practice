@@ -10,9 +10,23 @@ authors = [
     { name="Your Name", email="you@example.com" }
 ]
 dependencies = [
-    # List your runtime dependencies here, e.g.:
     "fastapi",
+    "uvicorn",
     "sqlalchemy",
     "psycopg2-binary",
-    # etc.
+    "openai",
+    "pydantic",
+    "starlette",
+    "requests",
+    "debugpy",
+    "pytest",
+    "cryptography>=42.0.0",
+    "pyopenssl>=24.0.0"
+]
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "debugpy"
 ]
