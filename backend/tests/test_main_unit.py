@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.backend.main import app, get_db
+from backend.main import app, get_db
 
 
 # Define the override function
@@ -38,9 +38,7 @@ def test_multiply_success(monkeypatch):
     def fake_multiply_with_random(number, db):
         return number * 2, 2.0, "Multiplied by 2"
 
-    monkeypatch.setattr(
-        "backend.backend.main.multiply_with_random", fake_multiply_with_random
-    )
+    monkeypatch.setattr("backend.main.multiply_with_random", fake_multiply_with_random)
     payload = {"number": 5.0}
     response = client.post("/multiply", json=payload)
     assert response.status_code == 200

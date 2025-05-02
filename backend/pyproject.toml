@@ -1,32 +1,27 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "backend"
 version = "0.1.0"
 description = "Your backend package"
-authors = [
-    { name="Your Name", email="you@example.com" }
-]
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "sqlalchemy",
-    "psycopg2-binary",
-    "openai",
-    "pydantic",
-    "starlette",
-    "requests",
-    "debugpy",
-    "pytest",
-    "cryptography>=42.0.0",
-    "pyopenssl>=24.0.0"
-]
-requires-python = ">=3.11"
+authors = ["alanlegoallec1990@gmail.com"]
+packages = [{ include = "backend" }]
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "debugpy"
-]
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+openai = "*"
+pydantic = "*"
+starlette = "*"
+requests = "*"
+cryptography = ">=42.0.0"
+pyopenssl = ">=24.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+debugpy = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

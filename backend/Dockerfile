@@ -1,43 +1,48 @@
-# Use the official Python image as a base
 FROM python:3.11-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies including OpenSSL development headers and PostgreSQL client
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    postgresql-client \
-    libssl-dev \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
+        postgresql-client \
+        libssl-dev \
+        bash \
+        curl \
+        build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install Python build tools (pip, setuptools, wheel)
-RUN pip install --upgrade pip setuptools wheel
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
-# Copy only the pyproject.toml first (for better Docker cache when dependencies change)
-COPY pyproject.toml ./
+# Add Poetry to PATH
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install the backend and its dependencies (using pip to install the package)
-RUN pip install .[dev]
+# Disable Poetry virtualenvs (use system environment inside container)
+RUN poetry config virtualenvs.create false
 
-# Copy the rest of the backend project (including source code)
+# Copy the backend code
 COPY . .
 
-# Make the wait-for-db.sh script executable
-RUN chmod +x scripts/install-vscode-extensions.sh
+# Default to not installing dev dependencies
+ARG INSTALL_DEV=false
 
-# Make the wait-for-db.sh script executable
-RUN chmod +x /app/wait-for-db.sh
+# Install dependencies: include dev tools if INSTALL_DEV is true
+RUN if [ "$INSTALL_DEV" = "true" ]; then \
+        poetry install; \
+    else \
+        poetry install --only main; \
+    fi
 
-# Remove any __pycache__ directories that might have been copied in
+# Make scripts executable
+RUN chmod +x scripts/install-vscode-extensions.sh \
+    && chmod +x /app/wait-for-db.sh
+
+# Optional: remove __pycache__ (keeps image clean)
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
-# Expose the port for the backend API (FastAPI/uvicorn)
+# Only expose the application port here (debug port managed in docker-compose)
 EXPOSE 5001
 
-# Expose the port for the VSCode debugger
-EXPOSE 5678
-
-# Default startup command
+# Start the backend
 CMD ["./wait-for-db.sh", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5001"]
