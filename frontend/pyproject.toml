@@ -7,7 +7,7 @@ packages = [{ include = "frontend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-streamlit = "*"
+streamlit = "^1.37.0"
 requests = "*"
 
 [tool.poetry.group.dev.dependencies]
