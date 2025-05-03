@@ -17,6 +17,10 @@ prod:
 # Clean up Docker containers, networks, volumes, and images
 clean:
 	@bash scripts/clean_docker.sh
+	@bash scripts/unset_env.sh
+
+clear-env:
+	@bash scripts/unset_env.sh
 
 debug-test:
 	docker compose -f docker-compose.yaml -f docker-compose.debug-test.yaml --profile debug-test up --build -d

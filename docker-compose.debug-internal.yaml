@@ -25,6 +25,6 @@ services:
     environment:
       - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
     ports:
-      - "${STREAMLIT_DEBUG_PROFILE_PORT}:${STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
+      - "${STREAMLIT_DEBUG_PROFILE_PORT}:${CONTAINER_STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
       - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for frontend
     profiles: ["debug-internal"]
