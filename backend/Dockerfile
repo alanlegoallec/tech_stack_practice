@@ -21,18 +21,24 @@ ENV PATH="/root/.local/bin:$PATH"
 # Disable Poetry virtualenvs (use system environment inside container)
 RUN poetry config virtualenvs.create false
 
-# Copy the backend code
-COPY . .
+# Copy only pyproject.toml and poetry.lock first
+COPY pyproject.toml poetry.lock ./
 
 # Default to not installing dev dependencies
 ARG INSTALL_DEV=false
 
 # Install dependencies: include dev tools if INSTALL_DEV is true
 RUN if [ "$INSTALL_DEV" = "true" ]; then \
-        poetry install; \
+        poetry install --no-root; \
     else \
-        poetry install --only main; \
+        poetry install --only main --no-root; \
     fi
+
+# Copy the backend code
+COPY . .
+
+# Install the local package (core code)
+RUN poetry install --only-root
 
 # Make scripts executable
 RUN chmod +x scripts/install-vscode-extensions.sh \
@@ -42,7 +48,7 @@ RUN chmod +x scripts/install-vscode-extensions.sh \
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
 # Only expose the application port (EXPOSE is mostly for documentation)
-EXPOSE ${API_PORT}
+EXPOSE ${CONTAINER_API_PORT}
 
 # Set default command — uses the environment variable
-CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}"]
+CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"]

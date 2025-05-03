@@ -1,9 +1,10 @@
 {
     "version": "0.2.0",
     "configurations": [
+
       {
         "description": "FastAPI app - to be run from within the container",
-        "name": "FastAPI - within",
+        "name": "FastAPI - internal",
         "type": "python",
         "request": "launch",
         "module": "uvicorn",
@@ -12,12 +13,28 @@
           "--host",
           "0.0.0.0",
           "--port",
-          "5001"
+          "${env:CONTAINER_API_PORT}"
         ],
         "env": {
           "DATABASE_URL": "postgresql://user:password@db:5432/numbersdb"
         },
         "jinja": true,
+        "justMyCode": false
+      },
+      {
+        "description": "Run pytest tests from within the container",
+        "name": "Pytest - internal",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "env": {
+          "OPENAI_API_KEY": "${env:OPENAI_API_KEY}",
+          "POSTGRES_USER": "${env:POSTGRES_USER}",
+          "POSTGRES_PASSWORD": "${env:POSTGRES_PASSWORD}",
+          "POSTGRES_DB_TEST": "${env:POSTGRES_DB_TEST}",
+          "DB_HOST": "${env:DB_HOST}",
+          "CONTAINER_DB_PORT": "${env:CONTAINER_DB_PORT}"
+        },
         "justMyCode": false
       }
     ]

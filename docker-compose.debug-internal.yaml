@@ -1,30 +1,58 @@
 services:
   backend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    command:
-      [
+    command: [
         "bash",
         "-c",
-        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+        "tail -f /dev/null",
+        # "bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",  # pre-install vscode extensions, but takes a long time and not reliable
       ]
-    environment:
-      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
     ports:
-      - "5002:5001" # Port for backend API (different port to avoid conflict with prod)
-      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
+      - "${HOST_API_PORT_DEBUG}:${CONTAINER_API_PORT}" # Port for backend API (different port to avoid conflict with prod)
+      - "${HOST_API_VSCODE_DEBUGGER_PORT}:${CONTAINER_API_PYTHON_DEBUGGER_PORT}" # Debugger port for VSCode
     profiles: ["debug-internal"]
+    volumes:
+      - ./backend:/app # Mount backend source code
+      - ./backend/scripts:/app/scripts # Mount backend script directory (for install-vscode-extensions.sh)
+      - ./path-to-local-vscode-extensions/backend:/root/.vscode/extensions # Separate local directory for backend VS Code extensions
 
   frontend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    command:
-      [
+    command: [
         "bash",
         "-c",
-        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+        "tail -f /dev/null",
+        # "bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",  # pre-install vscode extensions, but takes a long time and not reliable
       ]
-    environment:
-      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
     ports:
-      - "${STREAMLIT_DEBUG_PROFILE_PORT}:${STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
-      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for frontend
+      - "${HOST_STREAMLIT_PORT_DEBUG}:${CONTAINER_STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
+      - "${HOST_STREAMLIT_VSCODE_DEBUGGER_PORT}:${CONTAINER_STREAMLIT_PYTHON_DEBUGGER_PORT}" # Debugger port for frontend
     profiles: ["debug-internal"]
+    volumes:
+      - ./frontend:/app # Mount frontend source code
+      - ./frontend/scripts:/app/scripts # Mount frontend script directory (for install-vscode-extensions.sh)
+      - ./path-to-local-vscode-extensions/frontend:/root/.vscode/extensions # Separate local directory for frontend VS Code extensions
+
+  tests:
+    entrypoint: []
+    command: [
+        "bash",
+        "-c",
+        "tail -f /dev/null",
+        # "bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",  # pre-install vscode extensions, but takes a long time and not reliable
+      ]
+    profiles: ["debug-internal"]
+    volumes:
+      - ./backend:/app
+      - ./backend/scripts:/app/scripts
+      - ./path-to-local-vscode-extensions/backend-test:/root/.vscode/extensions
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
+      DB_HOST: ${DB_HOST}
+      CONTAINER_DB_PORT: ${CONTAINER_DB_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
