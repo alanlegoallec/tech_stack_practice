@@ -33,9 +33,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
-      API_PORT: ${API_PORT}
+      CONTAINER_API_PORT: ${CONTAINER_API_PORT}
     ports:
-      - "${API_PORT}:${API_PORT}"
+      - "${CONTAINER_API_PORT}:${CONTAINER_API_PORT}"
     depends_on:
       db:
         condition: service_healthy

@@ -6,7 +6,9 @@ import requests
 import streamlit as st
 
 backend_app_url_template = "http://backend-app:{port}/multiply"
-backend_app_url = backend_app_url_template.format(port=os.environ.get("API_PORT"))
+backend_app_url = backend_app_url_template.format(
+    port=os.environ.get("CONTAINER_API_PORT")
+)
 st.title("Multiply by a random number")
 
 number = st.number_input("Enter a number:", min_value=0, value=1)

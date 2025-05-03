@@ -42,7 +42,7 @@ RUN chmod +x scripts/install-vscode-extensions.sh \
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
 # Only expose the application port (EXPOSE is mostly for documentation)
-EXPOSE ${API_PORT}
+EXPOSE ${CONTAINER_API_PORT}
 
 # Set default command — uses the environment variable
-CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}"]
+CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"]

@@ -9,9 +9,9 @@ services:
       args:
         INSTALL_DEV: "true"
     entrypoint: []
-    command: sh -c "python -m debugpy --listen 0.0.0.0:${API_VSCODE_DEBUGGER_PORT} --wait-for-client -m uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}"
+    command: sh -c "python -m debugpy --listen 0.0.0.0:${API_VSCODE_DEBUGGER_PORT} --wait-for-client -m uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"
     ports:
-      - "${API_DEBUG_PROFILE_PORT}:${API_PORT}"
+      - "${API_DEBUG_PROFILE_PORT}:${CONTAINER_API_PORT}"
       - "${API_VSCODE_DEBUGGER_PORT}:${API_VSCODE_DEBUGGER_PORT}"
 
   frontend-app:
