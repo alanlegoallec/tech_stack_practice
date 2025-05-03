@@ -1,15 +1,15 @@
 services:
   backend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    env_file:
-      - .env
-    environment:
-      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
-    command:
-      [
+    command: [
         "bash",
         "-c",
-        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+        # "apt-get update && apt-get install -y wget gnupg apt-transport-https && \
+        # wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
+        # wget -q https://packages.microsoft.com/repos/vscode stable main && \
+        # apt-get update && apt-get install -y code && \
+        # bash /app/scripts/install-vscode-extensions.sh && \
+        "tail -f /dev/null",
       ]
     ports:
       - "${HOST_API_PORT_DEBUG}:${CONTAINER_API_PORT}" # Port for backend API (different port to avoid conflict with prod)
@@ -18,15 +18,11 @@ services:
 
   frontend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    env_file:
-      - .env
-    environment:
-      - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
-    command:
-      [
+    command: [
         "bash",
         "-c",
-        'if [ "$DEBUG_INTERNAL" = "true" ]; then sh /app/scripts/install-vscode-extensions.sh; fi && tail -f /dev/null',
+        #"bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",
+        "tail -f /dev/null",
       ]
     ports:
       - "${HOST_STREAMLIT_PORT_DEBUG}:${CONTAINER_STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)

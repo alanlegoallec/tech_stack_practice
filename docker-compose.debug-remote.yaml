@@ -2,8 +2,6 @@ services:
   backend-app:
     profiles:
       - debug-remote
-    env_file:
-      - .env
     build:
       context: ./backend
       dockerfile: Dockerfile

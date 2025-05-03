@@ -12,7 +12,7 @@
           "--host",
           "0.0.0.0",
           "--port",
-          "${env:CONTAINER_STREAMLIT_PORT}"
+          "${env:CONTAINER_API_PORT}"
         ],
         "env": {
           "DATABASE_URL": "postgresql://user:password@db:5432/numbersdb"
