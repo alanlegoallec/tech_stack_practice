@@ -31,12 +31,12 @@ jobs:
           # Backend dependencies
           cd ./backend
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install --without dev  # Use --without dev instead of --no-dev
+          poetry install
 
           # Frontend dependencies
           cd ../frontend
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install --without dev  # Use --without dev instead of --no-dev
+          poetry install
 
       - name: Run unit tests
         run: |
@@ -68,12 +68,12 @@ jobs:
           # Backend dependencies
           cd ./backend
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install --without dev  # Use --without dev instead of --no-dev
+          poetry install
 
           # Frontend dependencies
           cd ../frontend
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install --without dev  # Use --without dev instead of --no-dev
+          poetry install
 
       - name: Start Docker Compose for Integration Tests
         run: |
