@@ -8,7 +8,7 @@ debug-internal:
 
 # Target to start containers in dev mode
 dev:
-	docker compose -f docker-compose.yaml --profile dev up --build
+	docker compose -f docker-compose.yaml --profile dev up --build -d
 
 # Target to start containers in production mode
 prod:
@@ -17,3 +17,6 @@ prod:
 # Clean up Docker containers, networks, volumes, and images
 clean:
 	@bash scripts/clean_docker.sh
+
+debug-test:
+	docker compose -f docker-compose.yaml -f docker-compose.debug-test.yaml --profile debug-test up --build -d
