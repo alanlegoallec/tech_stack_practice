@@ -19,23 +19,31 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install poetry
-          poetry config virtualenvs.create false
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "Poetry installed"
 
-      - name: Install backend dependencies (dev)
-        working-directory: ./backend
+      - name: Install backend and frontend dependencies with Poetry
         run: |
-          poetry install --no-root
-          poetry install --only-root
+          cd ./backend
+          poetry install --no-dev
+          cd ../frontend
+          poetry install --no-dev
+        env:
+          POETRY_VIRTUALENVS_CREATE: "false" # Disable virtualenv creation, use the system environment
 
-      - name: Install frontend dependencies (dev)
-        working-directory: ./frontend
+      - name: Install pre-commit hooks
         run: |
-          poetry install --no-root
-          poetry install --only-root
+          cd ./backend
+          poetry run pre-commit install
+          cd ../frontend
+          poetry run pre-commit install
 
       - name: Run pre-commit checks on all files
-        run: pre-commit run --all-files --show-diff-on-failure
+        run: |
+          cd ./backend
+          poetry run pre-commit run --all-files --show-diff-on-failure
+          cd ../frontend
+          poetry run pre-commit run --all-files --show-diff-on-failure
 
   build-and-push:
     runs-on: ubuntu-latest
