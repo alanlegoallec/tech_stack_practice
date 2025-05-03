@@ -10,8 +10,8 @@ services:
     environment:
       - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
     ports:
-      - "5002:5001" # Port for backend API (different port to avoid conflict with prod)
-      - "${API_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for VSCode
+      - "${API_DEBUG_PROFILE_PORT}:${API_PORT}" # Port for backend API (different port to avoid conflict with prod)
+      - "${API_VSCODE_DEBUGGER_PORT}:${PYTHON_DEBUGGER_PORT}" # Debugger port for VSCode
     profiles: ["debug-internal"]
 
   frontend-app:
@@ -26,5 +26,5 @@ services:
       - DEBUG_INTERNAL=true # Set the DEBUG_INTERNAL environment variable for internal debug mode
     ports:
       - "${STREAMLIT_DEBUG_PROFILE_PORT}:${STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
-      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:5678" # Debugger port for frontend
+      - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:${PYTHON_DEBUGGER_PORT}" # Debugger port
     profiles: ["debug-internal"]
