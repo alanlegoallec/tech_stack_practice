@@ -1,30 +1,34 @@
 services:
   backend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    command: [
+    command:
+      [
         "bash",
         "-c",
-        # "apt-get update && apt-get install -y wget gnupg apt-transport-https && \
-        # wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
-        # wget -q https://packages.microsoft.com/repos/vscode stable main && \
-        # apt-get update && apt-get install -y code && \
-        # bash /app/scripts/install-vscode-extensions.sh && \
-        "tail -f /dev/null",
+        "bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",
       ]
     ports:
       - "${HOST_API_PORT_DEBUG}:${CONTAINER_API_PORT}" # Port for backend API (different port to avoid conflict with prod)
       - "${HOST_API_VSCODE_DEBUGGER_PORT}:${CONTAINER_API_PYTHON_DEBUGGER_PORT}" # Debugger port for VSCode
     profiles: ["debug-internal"]
+    volumes:
+      - ./backend:/app # Mount backend source code
+      - ./backend/scripts:/app/scripts # Mount backend script directory (for install-vscode-extensions.sh)
+      - ./path-to-local-vscode-extensions/backend:/root/.vscode/extensions # Separate local directory for backend VS Code extensions
 
   frontend-app:
     entrypoint: [] # Neutralize Dockerfile startup so we can manually run the debugger
-    command: [
+    command:
+      [
         "bash",
         "-c",
-        #"bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",
-        "tail -f /dev/null",
+        "bash /app/scripts/install-vscode-extensions.sh && tail -f /dev/null",
       ]
     ports:
       - "${HOST_STREAMLIT_PORT_DEBUG}:${CONTAINER_STREAMLIT_PORT}" # Map port for frontend Streamlit app (different port to avoid conflict with prod)
       - "${HOST_STREAMLIT_VSCODE_DEBUGGER_PORT}:${CONTAINER_STREAMLIT_PYTHON_DEBUGGER_PORT}" # Debugger port for frontend
     profiles: ["debug-internal"]
+    volumes:
+      - ./frontend:/app # Mount frontend source code
+      - ./frontend/scripts:/app/scripts # Mount frontend script directory (for install-vscode-extensions.sh)
+      - ./path-to-local-vscode-extensions/frontend:/root/.vscode/extensions # Separate local directory for frontend VS Code extensions
