@@ -52,6 +52,12 @@ repos:
       - id: bandit
         entry: bandit -r . --skip B101
         pass_filenames: false
+        args:
+          [
+            "-r",
+            "--exclude",
+            "./venv,./.venv,./.mypy_cache,./__pycache__,./path-to-local-vscode-extensions",
+          ]
 
   # -----------------------------
   # Python docstring enforcement

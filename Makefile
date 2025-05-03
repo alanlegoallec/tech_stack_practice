@@ -17,6 +17,14 @@ prod:
 # Clean up Docker containers, networks, volumes, and images
 clean:
 	@bash scripts/clean_docker.sh
+	@bash scripts/unset_env.sh
 
-debug-test:
-	docker compose -f docker-compose.yaml -f docker-compose.debug-test.yaml --profile debug-test up --build -d
+clear-env:
+	@bash scripts/unset_env.sh
+
+# Makefile entry to copy install-vscode-extensions.sh to backend and frontend
+copy-vscode-extensions-install-script:
+	@echo "Copying install-vscode-extensions.sh to backend and frontend scripts directories..."
+	cp scripts/install-vscode-extensions.sh backend/scripts/
+	cp scripts/install-vscode-extensions.sh frontend/scripts/
+	@echo "Successfully copied install-vscode-extensions.sh to backend and frontend!"
