@@ -14,7 +14,7 @@
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/backend",
-          "remoteRoot": "/app/backend"
+          "remoteRoot": "/app"
         }
       ],
       "justMyCode": false
@@ -26,15 +26,22 @@
       "request": "attach",
       "connect": {
         "host": "localhost",
-        "port": 5680  // Connect to the frontend debugger
+        "port": 5680
       },
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/frontend",
-          "remoteRoot": "/app/frontend"
-        }
+          "remoteRoot": "/app"
+        },
       ],
-      "justMyCode": false
+      "justMyCode": false,
+      "django": false,
+      "subProcess": true,
+      "gevent": true,
+      "jinja": true,
+      "redirectOutput": true,
+      "showReturnValue": true,
+      "debugStdLib": true
     }
   ]
 }
