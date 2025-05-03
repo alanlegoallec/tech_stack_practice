@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "description": "FastAPI (Docker) - to be run from outside the container",
       "name": "FastAPI - remote",
@@ -25,15 +26,22 @@
       "request": "attach",
       "connect": {
         "host": "localhost",
-        "port": 5680  // Connect to the frontend debugger
+        "port": 5680
       },
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/frontend",
           "remoteRoot": "/app"
-        }
+        },
       ],
-      "justMyCode": false
+      "justMyCode": false,
+      "django": false,
+      "subProcess": true,
+      "gevent": true,
+      "jinja": true,
+      "redirectOutput": true,
+      "showReturnValue": true,
+      "debugStdLib": true
     }
   ]
 }

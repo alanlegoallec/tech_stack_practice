@@ -21,8 +21,8 @@ def setup_database():
     db_user = os.environ.get("POSTGRES_USER")
     db_password = os.environ.get("POSTGRES_PASSWORD")
     db_name = os.environ.get("POSTGRES_DB")
-    db_host = os.environ.get("DB_HOST", "db")
-    db_port = os.environ.get("DB_PORT", 5432)
+    db_host = os.environ.get("DB_HOST")
+    db_port = os.environ.get("DB_PORT")
     DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
     print("DATABASE_URL:", DATABASE_URL)
     logging.info(f"DATABASE_URL: {DATABASE_URL}")

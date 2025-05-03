@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    container_name: db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -18,35 +19,64 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   backend-app:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: backend-app
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - API_PORT=${API_PORT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      API_PORT: ${API_PORT}
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
     profiles: ["prod", "dev"]
+    env_file: .env
 
   frontend-app:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend-app
     ports:
       - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
     depends_on:
       - backend-app
+    restart: unless-stopped
     profiles: ["prod", "dev"]
+    env_file: .env
+
+  tests:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
+    image: my-backend-app:latest
+    container_name: tests
+    command: ["pytest", "tests/test_main_integration.py"]
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["dev"]
+    env_file: .env
 
 volumes:
   postgres_data:
