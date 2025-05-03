@@ -95,7 +95,7 @@ jobs:
 
       - name: Start Docker Compose for Integration Tests
         run: |
-          docker-compose -f docker-compose.yml up -d  # Start services required for integration tests
+          docker compose -f docker-compose.yml up -d  # Start services required for integration tests
 
       - name: Run integration tests
         run: |
@@ -103,7 +103,7 @@ jobs:
           pytest tests/integration  # Run integration tests from the "integration" folder
 
       - name: Stop Docker Compose
-        run: docker-compose down # Stop the services after tests
+        run: docker compose down # Stop the services after tests
 
   # Build and push Docker images for backend and frontend
   build-and-push:
