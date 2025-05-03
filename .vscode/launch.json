@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "description": "FastAPI (Docker) - to be run from outside the container",
       "name": "FastAPI - remote",
@@ -13,7 +14,7 @@
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/backend",
-          "remoteRoot": "/app"
+          "remoteRoot": "/app/backend"
         }
       ],
       "justMyCode": false
@@ -30,7 +31,7 @@
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/frontend",
-          "remoteRoot": "/app"
+          "remoteRoot": "/app/frontend"
         }
       ],
       "justMyCode": false

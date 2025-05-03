@@ -41,8 +41,8 @@ RUN chmod +x scripts/install-vscode-extensions.sh \
 # Optional: remove __pycache__ (keeps image clean)
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 
-# Only expose the application port here (debug port managed in docker-compose)
-EXPOSE 5001
+# Only expose the application port (EXPOSE is mostly for documentation)
+EXPOSE ${API_PORT}
 
-# Start the backend
-CMD ["./wait-for-db.sh", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5001"]
+# Set default command — uses the environment variable
+CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}"]

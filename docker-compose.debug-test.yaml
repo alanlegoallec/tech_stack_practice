@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   backend-app:
     profiles:
@@ -15,6 +17,10 @@ services:
     ports:
       - "${API_DEBUG_PROFILE_PORT}:${API_PORT}"
       - "${API_VSCODE_DEBUGGER_PORT}:${API_VSCODE_DEBUGGER_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend-app:
     profiles:
@@ -32,3 +38,6 @@ services:
     ports:
       - "${STREAMLIT_DEBUG_PROFILE_PORT}:${STREAMLIT_PORT}"
       - "${STREAMLIT_VSCODE_DEBUGGER_PORT}:${STREAMLIT_VSCODE_DEBUGGER_PORT}"
+    depends_on:
+      - backend-app
+    restart: unless-stopped

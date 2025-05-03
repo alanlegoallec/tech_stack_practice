@@ -71,11 +71,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
       DB_HOST: db
-      DB_PORT: 5432
+      DB_PORT: ${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
-    profiles: ["dev"] # <- fixed indentation; this was inside depends_on
+    profiles: ["dev"]
     env_file: .env
 
 volumes:
