@@ -81,6 +81,10 @@ jobs:
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
           poetry install
 
+      - name: Verify .env.ci content
+        run: |
+          cat .env.ci
+
       - name: Start Docker Compose for Integration Tests
         run: |
           docker compose --env-file .env.ci -f docker-compose.yaml up -d  # Start services required for integration tests
