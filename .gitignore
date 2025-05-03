@@ -58,3 +58,6 @@ Desktop.ini
 
 # Node.js dependencies
 node_modules/
+
+# Local mount
+path-to-local*
