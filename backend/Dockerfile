@@ -21,18 +21,24 @@ ENV PATH="/root/.local/bin:$PATH"
 # Disable Poetry virtualenvs (use system environment inside container)
 RUN poetry config virtualenvs.create false
 
-# Copy the backend code
-COPY . .
+# Copy only pyproject.toml and poetry.lock first
+COPY pyproject.toml poetry.lock ./
 
 # Default to not installing dev dependencies
 ARG INSTALL_DEV=false
 
 # Install dependencies: include dev tools if INSTALL_DEV is true
 RUN if [ "$INSTALL_DEV" = "true" ]; then \
-        poetry install; \
+        poetry install --no-root; \
     else \
-        poetry install --only main; \
+        poetry install --only main --no-root; \
     fi
+
+# Copy the backend code
+COPY . .
+
+# Install the local package (core code)
+RUN poetry install --only-root
 
 # Make scripts executable
 RUN chmod +x scripts/install-vscode-extensions.sh \
