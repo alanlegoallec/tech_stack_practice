@@ -14,8 +14,18 @@ ENV PATH="/root/.local/bin:$PATH"
 # Copy the full source code
 COPY . .
 
-# Install dependencies using Poetry (no virtualenvs)
-RUN poetry config virtualenvs.create false && poetry install
+# Poetry (no virtualenvs)
+RUN poetry config virtualenvs.create false
+
+# Default to not installing dev dependencies
+ARG INSTALL_DEV=false
+
+# Install dependencies: include dev tools if INSTALL_DEV is true
+RUN if [ "$INSTALL_DEV" = "true" ]; then \
+        poetry install; \
+    else \
+        poetry install --only main; \
+    fi
 
 # Make the install-vscode-extensions.sh script executable (optional)
 RUN chmod +x scripts/install-vscode-extensions.sh

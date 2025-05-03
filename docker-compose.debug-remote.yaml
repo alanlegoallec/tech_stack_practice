@@ -4,14 +4,12 @@ services:
       - debug-remote
     env_file:
       - .env
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: "true"
     entrypoint: []
-    command:
-      - "sh"
-      - "-c"
-      - |
-        pip install debugpy -t /tmp \
-        && python /tmp/debugpy --listen 0.0.0.0:${API_VSCODE_DEBUGGER_PORT} --wait-for-client \
-        -m uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}
+    command: sh -c "python -m debugpy --listen 0.0.0.0:${API_VSCODE_DEBUGGER_PORT} --wait-for-client -m uvicorn backend.main:app --host 0.0.0.0 --port ${API_PORT}"
     ports:
       - "${API_DEBUG_PROFILE_PORT}:${API_PORT}"
       - "${API_VSCODE_DEBUGGER_PORT}:${API_VSCODE_DEBUGGER_PORT}"
@@ -21,6 +19,10 @@ services:
       - debug-remote
     env_file:
       - .env
+    build:
+      context: ./frontend
+      args:
+        INSTALL_DEV: "true"
     environment:
       - PYTHONPATH=/app
       - PYDEVD_DISABLE_FILE_VALIDATION=1
@@ -30,8 +32,7 @@ services:
       - "sh"
       - "-c"
       - |
-        pip install debugpy -t /tmp \
-        && python -Xfrozen_modules=off /tmp/debugpy --listen 0.0.0.0:${STREAMLIT_VSCODE_DEBUGGER_PORT} --wait-for-client \
+        python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:${STREAMLIT_VSCODE_DEBUGGER_PORT} --wait-for-client \
         -m streamlit run frontend/streamlit_app.py --server.port=${STREAMLIT_PORT} --server.address=0.0.0.0
     ports:
       - "${STREAMLIT_DEBUG_PROFILE_PORT}:${STREAMLIT_PORT}"
