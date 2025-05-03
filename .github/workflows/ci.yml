@@ -24,12 +24,18 @@ jobs:
 
       - name: Install backend and frontend dependencies with Poetry
         run: |
+          # Ensure Poetry is used globally
+          echo "Poetry Version: $(poetry --version)"
+
+          # Backend dependencies
           cd ./backend
-          poetry install --without-dev
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install --no-dev  # Install without dev dependencies
+
+          # Frontend dependencies
           cd ../frontend
-          poetry install --without-dev
-        env:
-          POETRY_VIRTUALENVS_CREATE: "false" # Disable virtualenv creation, use the system environment
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install --no-dev  # Install without dev dependencies
 
       - name: Install pre-commit hooks
         run: |
