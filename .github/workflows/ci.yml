@@ -37,12 +37,14 @@ jobs:
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
           poetry install --without dev  # Use --without dev instead of --no-dev
 
-      - name: Install pre-commit hooks
+      - name: Install pre-commit hooks for backend and frontend
         run: |
           cd ./backend
-          poetry run pre-commit install
+          poetry add --dev pre-commit  # Install pre-commit in the backend
+          poetry run pre-commit install  # Install hooks
           cd ../frontend
-          poetry run pre-commit install
+          poetry add --dev pre-commit  # Install pre-commit in the frontend
+          poetry run pre-commit install  # Install hooks
 
       - name: Run pre-commit checks on all files
         run: |
