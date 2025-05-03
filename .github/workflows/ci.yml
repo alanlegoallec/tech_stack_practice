@@ -12,8 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Load env from .env.ci
+        run: |
+          set -a
+          source .env.ci
+          set +a
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -51,8 +58,15 @@ jobs:
     needs: unit-tests # Ensures integration tests run after unit tests pass
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Load env from .env.ci
+        run: |
+          set -a
+          source .env.ci
+          set +a
 
       - name: Set up Python
         uses: actions/setup-python@v5
