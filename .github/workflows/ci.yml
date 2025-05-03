@@ -89,6 +89,10 @@ jobs:
         run: |
           env
 
+      - name: Print environment variables inside the backend container
+        run: |
+          docker compose exec backend printenv  # This will print environment variables inside the backend container
+
       - name: Run integration tests
         run: |
           cd ./backend
