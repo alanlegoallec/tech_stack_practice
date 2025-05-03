@@ -10,6 +10,8 @@ jobs:
   # Job to run unit tests
   unit-tests:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -47,6 +49,8 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     needs: unit-tests # Ensures integration tests run after unit tests pass
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
