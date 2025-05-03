@@ -81,6 +81,10 @@ jobs:
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
           poetry install
 
+      - name: Print Environment Variables
+        run: |
+          env
+
       - name: Verify .env.ci content
         run: |
           cat .env.ci
@@ -96,9 +100,8 @@ jobs:
         run: |
           docker compose -f docker-compose.yaml up -d  # Start services required for integration tests
 
-      - name: Print Environment Variables
-        run: |
-          env
+      - name: Print Docker Compose logs
+        run: docker compose logs backend
 
       - name: Print environment variables inside the backend container
         run: |
