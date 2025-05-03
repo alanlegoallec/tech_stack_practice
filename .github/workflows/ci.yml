@@ -16,12 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Load env from .env.ci
-        run: |
-          set -a
-          source .env.ci
-          set +a
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -62,12 +56,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Load env from .env.ci
-        run: |
-          set -a
-          source .env.ci
-          set +a
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -95,7 +83,7 @@ jobs:
 
       - name: Start Docker Compose for Integration Tests
         run: |
-          docker compose -f docker-compose.yaml up -d  # Start services required for integration tests
+          docker compose --env-file .env.ci -f docker-compose.yaml up -d  # Start services required for integration tests
 
       - name: Run integration tests
         run: |
