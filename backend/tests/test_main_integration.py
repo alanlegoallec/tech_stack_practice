@@ -15,7 +15,7 @@ db_user = os.environ["POSTGRES_USER"]
 db_password = os.environ["POSTGRES_PASSWORD"]
 db_name = os.environ["POSTGRES_DB_TEST"]
 db_host = os.environ.get("DB_HOST")
-db_port = os.environ.get("DB_PORT")
+db_port = os.environ.get("CONTAINER_DB_PORT")
 DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 engine = create_engine(DATABASE_URL)
