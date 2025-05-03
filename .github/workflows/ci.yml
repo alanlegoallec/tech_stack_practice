@@ -101,11 +101,11 @@ jobs:
           docker compose -f docker-compose.yaml up -d  # Start services required for integration tests
 
       - name: Print Docker Compose logs
-        run: docker compose logs backend
+        run: docker compose logs backend-app
 
       - name: Print environment variables inside the backend container
         run: |
-          docker compose exec backend printenv  # This will print environment variables inside the backend container
+          docker compose exec backend-app printenv  # This will print environment variables inside the backend container
 
       - name: Run integration tests
         run: |
