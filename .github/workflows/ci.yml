@@ -25,9 +25,9 @@ jobs:
       - name: Install backend and frontend dependencies with Poetry
         run: |
           cd ./backend
-          poetry install --no-dev
+          poetry install --without-dev
           cd ../frontend
-          poetry install --no-dev
+          poetry install --without-dev
         env:
           POETRY_VIRTUALENVS_CREATE: "false" # Disable virtualenv creation, use the system environment
 
