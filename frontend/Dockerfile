@@ -31,7 +31,7 @@ RUN if [ "$INSTALL_DEV" = "true" ]; then \
 RUN chmod +x scripts/install-vscode-extensions.sh
 
 # Expose the main frontend port only (others go in docker-compose)
-EXPOSE ${STREAMLIT_PORT}
+EXPOSE ${CONTAINER_STREAMLIT_PORT}
 
 # Run the app with the configured port
-CMD ["sh", "-c", "streamlit run frontend/streamlit_app.py --server.port=${STREAMLIT_PORT} --server.address=0.0.0.0"]
+CMD ["sh", "-c", "streamlit run frontend/streamlit_app.py --server.port=${CONTAINER_STREAMLIT_PORT} --server.address=0.0.0.0"]
