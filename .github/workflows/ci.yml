@@ -7,7 +7,8 @@ on:
     branches: [main, develop, ci-test]
 
 jobs:
-  build-and-test:
+  # Job to run unit tests
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,25 +38,59 @@ jobs:
           poetry config virtualenvs.create false  # Disable virtualenvs if not already done
           poetry install --without dev  # Use --without dev instead of --no-dev
 
-      - name: Install pre-commit hooks for backend and frontend
+      - name: Run unit tests
         run: |
           cd ./backend
-          poetry add --dev pre-commit  # Install pre-commit in the backend
-          poetry run pre-commit install  # Install hooks
-          cd ../frontend
-          poetry add --dev pre-commit  # Install pre-commit in the frontend
-          poetry run pre-commit install  # Install hooks
+          pytest tests/unit  # Run unit tests only from the "unit" folder
 
-      - name: Run pre-commit checks on all files
+  # Job to run integration tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests # Ensures integration tests run after unit tests pass
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "Poetry installed"
+
+      - name: Install backend and frontend dependencies with Poetry
+        run: |
+          # Ensure Poetry is used globally
+          echo "Poetry Version: $(poetry --version)"
+
+          # Backend dependencies
+          cd ./backend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install --without dev  # Use --without dev instead of --no-dev
+
+          # Frontend dependencies
+          cd ../frontend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install --without dev  # Use --without dev instead of --no-dev
+
+      - name: Start Docker Compose for Integration Tests
+        run: |
+          docker-compose -f docker-compose.yml up -d  # Start services required for integration tests
+
+      - name: Run integration tests
         run: |
           cd ./backend
-          poetry run pre-commit run --all-files --show-diff-on-failure
-          cd ../frontend
-          poetry run pre-commit run --all-files --show-diff-on-failure
+          pytest tests/integration  # Run integration tests from the "integration" folder
 
+      - name: Stop Docker Compose
+        run: docker-compose down # Stop the services after tests
+
+  # Build and push Docker images for backend and frontend
   build-and-push:
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: integration-tests # Ensure this job runs after integration tests
     environment: production
     steps:
       - uses: actions/checkout@v4
