@@ -65,7 +65,7 @@ services:
         INSTALL_DEV: "true"
     image: my-backend-app:latest
     container_name: tests
-    command: ["pytest", "tests/test_main_integration.py"]
+    command: ["pytest"]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       POSTGRES_USER: ${POSTGRES_USER}

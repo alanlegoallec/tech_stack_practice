@@ -3,7 +3,7 @@
   "configurations": [
     {
       "description": "UI app - to be run from within the container",
-      "name": "UI - within",
+      "name": "UI - internal",
       "type": "python",
       "request": "launch",
       "program": "/usr/local/bin/streamlit",
