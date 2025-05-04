@@ -30,5 +30,4 @@ copy-vscode-extensions-install-script:
 	@echo "Successfully copied install-vscode-extensions.sh to backend and frontend!"
 
 test-coverage:
-	docker compose -f docker-compose.yaml --profile dev run --rm tests \
-	pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
+	docker compose -f docker-compose.yaml --profile dev run --rm tests pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
