@@ -98,7 +98,7 @@ jobs:
 
       - name: Start Docker Compose for Integration Tests
         run: |
-          docker compose -f docker-compose.yaml up -d  # Start services required for integration tests
+          docker compose -f docker-compose.yaml --profile dev up -d
 
       - name: Print Docker Compose logs
         run: docker compose logs backend-app
