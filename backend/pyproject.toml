@@ -7,21 +7,21 @@ packages = [{ include = "backend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.85.0"  # Ensure FastAPI is using a compatible version
-uvicorn = "^0.18.0"
-sqlalchemy = "^1.4.37"
-psycopg2-binary = "^2.9.3"
-openai = "^0.11.4"
-pydantic = "^1.9.0"
-starlette = "^0.20.4"  # Align with FastAPI's requirement
-requests = "^2.26.0"
-cryptography = "^42.0.0"
-pyopenssl = "^24.0.0"
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+openai = "*"
+pydantic = "*"
+starlette = "*"
+requests = "*"
+cryptography = ">=42.0.0"
+pyopenssl = ">=24.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.1.2"
-debugpy = "^1.5.1"
-pytest-cov = "^4.0.0"
+pytest = "*"
+debugpy = "*"
+pytest-cov = "^4.0"
 
 [build-system]
 requires = ["poetry-core"]

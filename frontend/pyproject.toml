@@ -2,18 +2,18 @@
 name = "frontend"
 version = "0.1.0"
 description = "Streamlit frontend for random number multiplier"
-authors = ["alanlegoallec1990@gmail.com"]
+authors = ["alanlegoallec1990"]
 packages = [{ include = "frontend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-streamlit = "^1.37.0"  # Specify a version range for stability
-requests = "^2.26.0"  # Pin version for stability
-pytest-cov = "^4.0.0"  # Move this under dev dependencies if used for testing
+streamlit = "^1.37.0"
+requests = "*"
+pytest-cov = "^4.0"
 
 [tool.poetry.group.dev.dependencies]
-debugpy = "^1.5.1"  # Specify a version
-pytest = "^7.1.2"  # Specify a version
+debugpy = "*"
+pytest = "*"
 
 [build-system]
 requires = ["poetry-core"]
