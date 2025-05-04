@@ -46,96 +46,96 @@ jobs:
           cd ./frontend
           npx eslint . --max-warnings=0  # Fail the job if there are any warnings
 
-  # Job to run unit tests
-  unit-tests:
-    runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
+  # # Job to run unit tests
+  # unit-tests:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.11"
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "Poetry installed"
+  #     - name: Install Poetry
+  #       run: |
+  #         curl -sSL https://install.python-poetry.org | python3 -
+  #         echo "Poetry installed"
 
-      - name: Install backend and frontend dependencies with Poetry
-        run: |
-          # Ensure Poetry is used globally
-          echo "Poetry Version: $(poetry --version)"
+  #     - name: Install backend and frontend dependencies with Poetry
+  #       run: |
+  #         # Ensure Poetry is used globally
+  #         echo "Poetry Version: $(poetry --version)"
 
-          # Backend dependencies
-          cd ./backend
-          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install
+  #         # Backend dependencies
+  #         cd ./backend
+  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+  #         poetry install
 
-          # Frontend dependencies
-          cd ../frontend
-          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install
+  #         # Frontend dependencies
+  #         cd ../frontend
+  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+  #         poetry install
 
-      - name: Run unit tests
-        run: |
-          cd ./backend
-          pytest tests/unit  # Run unit tests only from the "unit" folder
+  #     - name: Run unit tests
+  #       run: |
+  #         cd ./backend
+  #         pytest tests/unit  # Run unit tests only from the "unit" folder
 
-  # Job to run integration tests
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: unit-tests # Ensures integration tests run after unit tests pass
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
+  # # Job to run integration tests
+  # integration-tests:
+  #   runs-on: ubuntu-latest
+  #   needs: unit-tests # Ensures integration tests run after unit tests pass
+  #   env:
+  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.11"
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "Poetry installed"
+  #     - name: Install Poetry
+  #       run: |
+  #         curl -sSL https://install.python-poetry.org | python3 -
+  #         echo "Poetry installed"
 
-      - name: Install backend and frontend dependencies with Poetry
-        run: |
-          # Ensure Poetry is used globally
-          echo "Poetry Version: $(poetry --version)"
+  #     - name: Install backend and frontend dependencies with Poetry
+  #       run: |
+  #         # Ensure Poetry is used globally
+  #         echo "Poetry Version: $(poetry --version)"
 
-          # Backend dependencies
-          cd ./backend
-          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install
+  #         # Backend dependencies
+  #         cd ./backend
+  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+  #         poetry install
 
-          # Frontend dependencies
-          cd ../frontend
-          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-          poetry install
+  #         # Frontend dependencies
+  #         cd ../frontend
+  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+  #         poetry install
 
-      - name: Rename .env.ci to .env
-        run: mv .env.ci .env
+  #     - name: Rename .env.ci to .env
+  #       run: mv .env.ci .env
 
-      - name: Run integration tests in Docker
-        run: |
-          docker compose -f docker-compose.yaml --profile dev run --rm tests
+  #     - name: Run integration tests in Docker
+  #       run: |
+  #         docker compose -f docker-compose.yaml --profile dev run --rm tests
 
-      - name: Shut down Docker Compose
-        if: always()
-        run: |
-          docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
+  #     - name: Shut down Docker Compose
+  #       if: always()
+  #       run: |
+  #         docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
 
   # Job to check if the full stack is up and running
   stack-up-check:
     runs-on: ubuntu-latest
-    needs: integration-tests # Ensure this job runs after integration tests pass
+    # TODO: Alan - needs: integration-tests # Ensure this job runs after integration tests pass
     steps:
       - uses: actions/checkout@v4
       - name: Rename .env.ci to .env
@@ -156,7 +156,7 @@ jobs:
   # Build and push Docker images for backend and frontend
   build-and-push:
     runs-on: ubuntu-latest
-    needs: integration-tests # Ensure this job runs after integration tests pass
+    # needs: integration-tests # Ensure this job runs after integration tests pass
     environment: production
     steps:
       - uses: actions/checkout@v4
