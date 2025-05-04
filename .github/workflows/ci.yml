@@ -7,6 +7,45 @@ on:
     branches: [main, develop, ci-test]
 
 jobs:
+  # Job to run static code analysis (linting)
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Backend Python linting (flake8 or pylint)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linting tools for Python
+        run: |
+          pip install flake8  # or pylint if preferred
+          echo "flake8 installed"
+
+      - name: Run Python linting (flake8)
+        run: |
+          cd ./backend
+          flake8 .  # You can also use pylint if preferred
+
+      # Frontend JavaScript linting (eslint)
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16" # Adjust to the version you need
+
+      - name: Install linting tools for frontend (eslint)
+        run: |
+          cd ./frontend
+          npm install eslint --save-dev
+          echo "eslint installed"
+
+      - name: Run frontend linting (eslint)
+        run: |
+          cd ./frontend
+          npx eslint . --max-warnings=0  # Fail the job if there are any warnings
+
   # Job to run unit tests
   unit-tests:
     runs-on: ubuntu-latest
@@ -99,6 +138,8 @@ jobs:
     needs: integration-tests # Ensure this job runs after integration tests pass
     steps:
       - uses: actions/checkout@v4
+      - name: Rename .env.ci to .env
+        run: mv .env.ci .env
       - name: Start full stack
         run: |
           docker compose -f docker-compose.yaml --profile dev up -d backend db
