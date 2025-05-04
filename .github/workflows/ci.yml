@@ -64,10 +64,9 @@ jobs:
           cd backend
           poetry install
 
-      - name: Install Trivy
+      - name: Download and install Trivy
         run: |
-          sudo apt-get update
-          sudo apt-get install -y trivy
+          curl -sSfL https://github.com/aquasecurity/trivy/releases/download/v0.29.2/trivy_0.29.2_Linux-x86_64.tar.gz | sudo tar xz -C /usr/local/bin
 
       - name: Run Trivy vulnerability scan
         run: |
