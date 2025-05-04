@@ -145,7 +145,7 @@ jobs:
         run: mv .env.ci .env
       - name: Start full stack
         run: |
-          docker compose -f docker-compose.yaml --profile dev up -d backend db
+          docker compose -f docker-compose.yaml --profile dev up
       - name: Wait a bit and run a health check
         run: |
           for i in {1..10}; do
