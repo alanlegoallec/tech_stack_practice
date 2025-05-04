@@ -48,7 +48,7 @@ services:
         INSTALL_DEV: "true"
     entrypoint: []
     command: >
-      sh -c "python -m debugpy --listen 0.0.0.0:${CONTAINER_PYTEST_PYTHON_DEBUGGER_PORT} --wait-for-client -m pytest"
+      sh -c "python -m debugpy --listen 0.0.0.0:${CONTAINER_PYTEST_PYTHON_DEBUGGER_PORT} --wait-for-client -m pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       POSTGRES_USER: ${POSTGRES_USER}
