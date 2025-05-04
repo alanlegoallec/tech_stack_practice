@@ -84,6 +84,8 @@ services:
       db:
         condition: service_healthy
     profiles: ["dev"]
+    volumes:
+      - ./backend:/app
 
 volumes:
   postgres_data:
