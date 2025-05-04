@@ -1,7 +1,8 @@
 # This is a toy project to practice the full tech stack:
 
-- Proper structure repo
-  - Front and backend are separate folders, containers and packages
+0. Proper structure repo
+
+- Front and backend are separate folders, containers and packages
 
 1. UI: simple streamlit
 2. Backend: simple multiplication - queries user input from streamlit, random number from database, and queries LLM using API
