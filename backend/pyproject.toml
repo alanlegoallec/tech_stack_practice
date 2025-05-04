@@ -7,21 +7,21 @@ packages = [{ include = "backend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "*"
-uvicorn = "*"
-sqlalchemy = "*"
-psycopg2-binary = "*"
-openai = "*"
-pydantic = "*"
-starlette = "*"
-requests = "*"
-cryptography = ">=42.0.0"
-pyopenssl = ">=24.0.0"
+fastapi = "^0.85.0"  # Replace with a specific version if possible
+uvicorn = "^0.18.0"  # Specify a version to ensure compatibility
+sqlalchemy = "^1.4.37"  # Pin the version of SQLAlchemy
+psycopg2-binary = "^2.9.3"  # Pin the version of psycopg2
+openai = "^0.11.4"  # OpenAI library, pin version
+pydantic = "^1.9.0"  # Pin Pydantic version
+starlette = "^0.18.0"  # Starlette version should be compatible with FastAPI
+requests = "^2.26.0"  # Pin Requests version to ensure compatibility
+cryptography = "^42.0.0"  # Pin Cryptography to avoid breaking changes
+pyopenssl = "^24.0.0"  # Pin PyOpenSSL version
 
 [tool.poetry.group.dev.dependencies]
-pytest = "*"
-debugpy = "*"
-pytest-cov = "^4.0"
+pytest = "^7.1.2"  # Pin pytest to a known stable version
+debugpy = "^1.5.1"  # Pin debugpy version
+pytest-cov = "^4.0.0"  # Pin pytest-cov for coverage reports
 
 [build-system]
 requires = ["poetry-core"]
