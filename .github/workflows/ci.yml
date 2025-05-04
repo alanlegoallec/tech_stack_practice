@@ -69,15 +69,15 @@ jobs:
 
       - name: Start containers
         run: |
-          docker-compose up -d
+          docker compose -f docker-compose.yaml --profile dev up -d
 
       - name: View container logs for db
         run: |
-          docker-compose logs db
+          docker compose -f docker-compose.yaml --profile dev logs db
 
       - name: Run tests
         run: |
-          docker-compose run --rm tests pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
+          docker compose -f docker-compose.yaml --profile dev run --rm tests pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
 
       # - name: Run backend tests with coverage
       #   run: make test-coverage
