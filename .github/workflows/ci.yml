@@ -110,7 +110,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./backend/coverage.xml # Specify the coverage report file
+          files: ./backend/coverage.xml # Specify the coverage report file
 
   unit-tests:
     runs-on: ubuntu-latest
