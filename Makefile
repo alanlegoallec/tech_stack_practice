@@ -17,10 +17,12 @@ prod:
 # Clean up Docker containers, networks, volumes, and images
 clean:
 	@bash scripts/clean_docker.sh
-	@bash scripts/unset_env.sh
 
 clear-env:
-	@bash scripts/unset_env.sh
+	@echo "Cannot unset variables from Makefile. Please run:"
+	@echo "    source scripts/clear-env.sh"
+	@echo "or"
+	@echo "    . scripts/clear-env.sh"
 
 # Makefile entry to copy install-vscode-extensions.sh to backend and frontend
 copy-vscode-extensions-install-script:

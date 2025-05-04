@@ -61,3 +61,8 @@ node_modules/
 
 # Local mount
 path-to-local*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

@@ -9,7 +9,7 @@
    - Communication with other services:
      - frontend: queries user input from streamlit
      - SQL DB: random number from database
-     - API:queries LLM
+     - API: queries LLM
    - FastAPI wrapper
 1. Docker
    - Basics
