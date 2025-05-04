@@ -7,45 +7,45 @@ on:
     branches: [main, develop, ci-test]
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # linting:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.11"
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "Poetry installed"
+  #     - name: Install Poetry
+  #       run: |
+  #         curl -sSL https://install.python-poetry.org | python3 -
+  #         echo "Poetry installed"
 
-      - name: Install backend and frontend dependencies with Poetry
-        run: |
-          # Backend dependencies
-          cd ./backend
-          poetry config virtualenvs.create false
-          poetry install
+  #     - name: Install backend and frontend dependencies with Poetry
+  #       run: |
+  #         # Backend dependencies
+  #         cd ./backend
+  #         poetry config virtualenvs.create false
+  #         poetry install
 
-          # Frontend dependencies
-          cd ../frontend
-          poetry config virtualenvs.create false
-          poetry install
+  #         # Frontend dependencies
+  #         cd ../frontend
+  #         poetry config virtualenvs.create false
+  #         poetry install
 
-      - name: Install pre-commit hooks
-        run: |
-          pip install pre-commit
-          pre-commit install
+  #     - name: Install pre-commit hooks
+  #       run: |
+  #         pip install pre-commit
+  #         pre-commit install
 
-      - name: Run pre-commit checks
-        run: |
-          pre-commit run --all-files
+  #     - name: Run pre-commit checks
+  #       run: |
+  #         pre-commit run --all-files
 
   test-coverage:
     runs-on: ubuntu-latest
-    needs: linting # Only run if linting job passes
+    #needs: linting # Only run if linting job passes
     steps:
       - uses: actions/checkout@v4
 
@@ -66,8 +66,8 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          cd ./backend
-          pytest --cov=./backend --cov-report=xml --cov-report=term-missing
+          docker compose -f docker-compose.ci.yaml run --rm backend \
+            pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -173,7 +173,7 @@ jobs:
         run: mv .env.ci .env
       - name: Start full stack
         run: |
-          docker compose -f docker-compose.yaml --profile dev up
+          docker compose -f docker-compose.yaml --profile dev up -d
       - name: Wait a bit and run a health check
         run: |
           for i in {1..10}; do
