@@ -78,7 +78,7 @@ jobs:
 
   test-coverage:
     runs-on: ubuntu-latest
-    #needs: linting # Only run if linting job passes
+    needs: linting # Ensure test-coverage job only runs if linting job passes
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -112,7 +112,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./backend/coverage.xml # Specify the coverage report file
 
-  # Job to run unit tests
   unit-tests:
     runs-on: ubuntu-latest
     env:
@@ -151,7 +150,6 @@ jobs:
           cd ./backend
           pytest tests/unit  # Run unit tests only from the "unit" folder
 
-  # Job to run integration tests
   integration-tests:
     runs-on: ubuntu-latest
     needs: unit-tests # Ensures integration tests run after unit tests pass
@@ -198,7 +196,6 @@ jobs:
         run: |
           docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
 
-  # Job to check if the full stack is up and running
   stack-up-check:
     runs-on: ubuntu-latest
     needs: integration-tests # Ensure this job runs after integration tests pass
@@ -222,10 +219,9 @@ jobs:
         run: |
           docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
 
-  # Build and push Docker images for backend and frontend
   build-and-push:
     runs-on: ubuntu-latest
-    # needs: integration-tests # Ensure this job runs after integration tests pass
+    needs: integration-tests # Ensure this job runs after integration tests pass
     environment: production
     steps:
       - uses: actions/checkout@v4
