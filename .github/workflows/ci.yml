@@ -64,9 +64,9 @@ jobs:
           cd ./backend
           poetry install
 
-      - name: Run tests with coverage
+      - name: Run backend tests with coverage
         run: |
-          docker compose -f docker-compose.ci.yaml run --rm backend \
+          docker compose -f docker-compose.yaml --profile dev run --rm tests \
             pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
 
       - name: Upload coverage to Codecov
