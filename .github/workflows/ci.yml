@@ -60,7 +60,7 @@ jobs:
           poetry install
 
       - name: Run dependency scan with Snyk
-        uses: snyk/actions@v3
+        uses: snyk/actions
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
