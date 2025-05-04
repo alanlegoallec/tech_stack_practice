@@ -63,6 +63,7 @@ jobs:
         uses: snyk/actions@v1
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
