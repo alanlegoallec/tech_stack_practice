@@ -42,7 +42,7 @@ RUN poetry install --only-root
 
 # Make scripts executable
 RUN chmod +x scripts/install-vscode-extensions.sh \
-    && chmod +x /app/wait-for-db.sh
+    && chmod +x scripts/wait-for-db.sh
 
 # Optional: remove __pycache__ (keeps image clean)
 RUN find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -51,4 +51,4 @@ RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 EXPOSE ${CONTAINER_API_PORT}
 
 # Set default command — uses the environment variable
-CMD ["sh", "-c", "./wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"]
+CMD ["sh", "-c", "./scripts/wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"]

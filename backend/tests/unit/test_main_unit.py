@@ -1,8 +1,9 @@
 """Unit tests for the FastAPI application."""
 
+# flake8: noqa: E402
 import os
 
-os.environ["UNIT_TESTS"] = "1"  # noqa: E402
+os.environ["UNIT_TESTS"] = "1"
 
 from unittest.mock import MagicMock
 
