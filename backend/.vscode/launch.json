@@ -35,6 +35,12 @@
           "DB_HOST": "${env:DB_HOST}",
           "CONTAINER_DB_PORT": "${env:CONTAINER_DB_PORT}"
         },
+        "args": [
+          "--cov=backend",
+          "--cov-report=xml",
+          "--cov-report=term-missing",
+          "--cov-fail-under=85"
+        ],
         "justMyCode": false
       }
     ]

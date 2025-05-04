@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "python"
+    directory: "/backend" # Specify the directory where your pyproject.toml or requirements.txt is
+    schedule:
+      interval: "weekly" # You can adjust this to daily, monthly, etc.

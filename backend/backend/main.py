@@ -27,6 +27,24 @@ def setup_database():
     print("DATABASE_URL:", DATABASE_URL)
     logging.info(f"DATABASE_URL: {DATABASE_URL}")
 
+    # Check if any value is missing
+    if not all([db_user, db_password, db_name, db_host, db_port]):
+        missing_vars = [
+            var
+            for var, value in zip(
+                [
+                    "POSTGRES_USER",
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_DB",
+                    "DB_HOST",
+                    "CONTAINER_DB_PORT",
+                ],
+                [db_user, db_password, db_name, db_host, db_port],
+            )
+            if not value
+        ]
+        raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
+
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return SessionLocal
