@@ -1,33 +1,42 @@
 # This is a toy project to practice the full tech stack:
 
-1. Docker
-2. Pytest
+- Proper structure repo
+  - Front and backend are separate folders, containers and packages
 
-Package front end
-Fix make clean
-Compose profiles
-Debugger: from container
-Remove requirements
-Debbuger: remote and container, from streamlit. Test if can debug both containers at the same time
-Fix debugger since moved to fastapi
-Understand benefit package
-Set up poetry and remove reqs
-Properly install dev dependencies with poetry
-Parametrize ports
-Trim down variables from env being passed to only what is necessary
-Remove if condition for vsextension
-Script to update install vs code extensions
-Parametrize: "DATABASE_URL": "postgresql://user:password@db:5432/numbersdb"
-Add back the testing suite container
-Add testing to debug models as well
-Debug testing suite
-Remote debugging, mount codebase in local - already done??
-Run both unit tests and integration tests when PR and pytest
-Is CI using pytest?
-Is CI using docker compose?
-Is CI using poetry?
-Should CI be renamed CICD now?
-Set up codecov
-Create dock hub repo
-Pin version failed
-Pin version dependency in pyproject.toml
+1. UI: simple streamlit
+2. Backend: simple multiplication - queries user input from streamlit, random number from database, and queries LLM using API
+3. FastAPI
+4. Docker
+   - Basics
+   - Volume Mounting
+   - Containers communication: docker-compose
+   - Docker compose profiles
+   - Debugging with VS Code:
+     - Remote debugging - connect the debugger from the local host to a running container
+     - Internal debugging - start vscode debugger from within the computer -
+     - Debug all containers simultaneously
+   - Only expose the relevant environment variables to each container
+5. Pytest
+   - Unit tests
+   - Integration testing
+   - Test coverage and report with Codecov
+6. Packaging code as packaged that can be installed
+7. Dependencies
+   - Handled with Poetry
+   - Pinned
+8. Pre-commits
+9. GitHub actions
+10. Make file
+11. Parametrization of docker variables
+12. Using .env to pass variables
+13. Using .env.ci + GitHub secrets for CICD pipeline
+14. CICD:
+    - Linting
+    - Tests coverage
+    - Unit tests
+    - Integration tests
+    - Stack-up test
+    - Deploy to Docker Hub
+15. Use .sh scripts to keep logic clean
+16. Mount container's code locally
+17. GitFlow branch protections on GitHub
