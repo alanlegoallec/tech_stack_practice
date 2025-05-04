@@ -66,8 +66,7 @@ jobs:
 
       - name: Install Trivy
         run: |
-          VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | jq -r .tag_name)
-          curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/${VERSION}/trivy_${VERSION}_Linux-x86_64.tar.gz" | sudo tar xz -C /usr/local/bin
+          curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/v0.62.0/trivy_0.62.0_FreeBSD-32bit.tar.gz" | sudo tar xz -C /usr/local/bin
 
       - name: Run Trivy vulnerability scan
         run: |
