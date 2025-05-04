@@ -7,13 +7,13 @@ packages = [{ include = "frontend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-streamlit = "^1.37.0"
-requests = "*"
-pytest-cov = "^4.0"
+streamlit = "1.44.1"
+requests = "2.32.3"
+pytest-cov = "6.1.1"
 
 [tool.poetry.group.dev.dependencies]
-debugpy = "*"
-pytest = "*"
+debugpy = "1.8.14"
+pytest = "8.3.5"
 
 [build-system]
 requires = ["poetry-core"]
