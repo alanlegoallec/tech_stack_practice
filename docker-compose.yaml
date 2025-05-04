@@ -65,7 +65,14 @@ services:
         INSTALL_DEV: "true"
     image: my-backend-app:latest
     container_name: tests
-    command: ["pytest"]
+    command:
+      [
+        "pytest",
+        "--cov=backend",
+        "--cov-report=xml",
+        "--cov-report=term-missing",
+        "--cov-fail-under=85",
+      ]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       POSTGRES_USER: ${POSTGRES_USER}
