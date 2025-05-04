@@ -67,11 +67,9 @@ services:
     container_name: tests
     command:
       [
-        "pytest",
-        "--cov=backend",
-        "--cov-report=xml",
-        "--cov-report=term-missing",
-        "--cov-fail-under=85",
+        "sh",
+        "-c",
+        "./scripts/wait-for-db.sh pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85",
       ]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
