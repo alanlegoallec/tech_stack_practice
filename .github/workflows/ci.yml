@@ -107,10 +107,9 @@ jobs:
         run: |
           docker compose exec backend-app printenv  # This will print environment variables inside the backend container
 
-      - name: Run integration tests
+      - name: Run integration tests in Docker
         run: |
-          cd ./backend
-          pytest tests/integration  # Run integration tests from the "integration" folder
+          docker compose -f docker-compose.yaml --profile dev run tests
 
       - name: Stop Docker Compose
         run: docker compose down # Stop the services after tests
