@@ -59,10 +59,10 @@ jobs:
           cd backend
           poetry install
 
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python@v3
+      - name: Run Snyk Vulnerability Scanning
+        uses: snyk/actions@v1
         with:
-          snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure to add your Snyk token to secrets
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
