@@ -45,8 +45,6 @@ jobs:
 
   dependency-scan:
     runs-on: ubuntu-latest
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,12 +64,14 @@ jobs:
           cd backend
           poetry install
 
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python@master
-        with:
-          command: test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Run Trivy vulnerability scan
+        run: |
+          trivy fs --exit-code 1 --no-progress .
 
   # test-coverage:
   #   runs-on: ubuntu-latest
