@@ -73,9 +73,10 @@ jobs:
       - name: Run backend tests with coverage
         run: make test-coverage
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./backend/coverage.xml # Specify the coverage report file
 
   # # Job to run unit tests
