@@ -46,6 +46,9 @@ jobs:
   test-coverage:
     runs-on: ubuntu-latest
     #needs: linting # Only run if linting job passes
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
