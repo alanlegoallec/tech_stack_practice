@@ -9,6 +9,7 @@ packages = [{ include = "frontend" }]
 python = "^3.11"
 streamlit = "^1.37.0"
 requests = "*"
+pytest-cov = "^4.0"
 
 [tool.poetry.group.dev.dependencies]
 debugpy = "*"

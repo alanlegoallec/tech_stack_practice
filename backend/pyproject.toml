@@ -17,6 +17,7 @@ starlette = "*"
 requests = "*"
 cryptography = ">=42.0.0"
 pyopenssl = ">=24.0.0"
+pytest-cov = "^4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
