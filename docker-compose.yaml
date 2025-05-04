@@ -16,9 +16,10 @@ services:
       - ./data:/docker-entrypoint-initdb.d/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
+      interval: 15s
       timeout: 5s
-      retries: 10
+      retries: 15
+      start_period: 60s # Give the DB 60 seconds to initialize before health checks start
     restart: unless-stopped
 
   backend-app:
