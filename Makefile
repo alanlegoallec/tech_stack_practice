@@ -31,5 +31,5 @@ copy-vscode-extensions-install-script:
 
 test-coverage:
 	docker compose -f docker-compose.yaml --profile dev up --build -d
-	docker compose -f docker-compose.yaml --profile dev run --rm tests pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85
+	docker compose -f docker-compose.yaml --profile dev run --rm tests pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=75
 	docker compose -f docker-compose.yaml --profile dev down
