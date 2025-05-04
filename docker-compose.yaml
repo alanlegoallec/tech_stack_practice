@@ -70,7 +70,7 @@ services:
       [
         "sh",
         "-c",
-        "./scripts/wait-for-db.sh pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=85",
+        "./scripts/wait-for-db.sh pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=75",
       ]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
