@@ -64,6 +64,9 @@ jobs:
           cd ./backend
           poetry install
 
+      - name: Rename .env.ci to .env
+        run: mv .env.ci .env
+
       - name: Run backend tests with coverage
         run: |
           docker compose -f docker-compose.yaml --profile dev run --rm tests \
