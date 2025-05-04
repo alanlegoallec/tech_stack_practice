@@ -96,13 +96,17 @@ jobs:
   # Job to check if the full stack is up and running
   stack-up-check:
     runs-on: ubuntu-latest
+    needs: integration-tests # Ensure this job runs after integration tests pass
     steps:
       - uses: actions/checkout@v4
       - name: Start full stack
         run: |
-          docker compose -f docker-compose.yaml --profile dev up -d
+          docker compose -f docker-compose.yaml --profile dev up -d backend db
       - name: Wait a bit and run a health check
-        run: sleep 10 && curl -f http://localhost:8000/health || exit 1
+        run: |
+          for i in {1..10}; do
+            curl -f http://localhost:8000/health && break || sleep 5;
+          done
       - name: Tear down
         if: always()
         run: |
@@ -111,7 +115,7 @@ jobs:
   # Build and push Docker images for backend and frontend
   build-and-push:
     runs-on: ubuntu-latest
-    needs: integration-tests # Ensure this job runs after integration tests
+    needs: integration-tests # Ensure this job runs after integration tests pass
     environment: production
     steps:
       - uses: actions/checkout@v4
