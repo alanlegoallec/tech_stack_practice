@@ -7,21 +7,21 @@ packages = [{ include = "backend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "*"
-uvicorn = "*"
-sqlalchemy = "*"
-psycopg2-binary = "*"
+fastapi = "0.115.12"
+uvicorn = "0.34.2"
+sqlalchemy = "2.0.40"
+psycopg2-binary = "2.9.10"
 openai = "1.77.0"
-pydantic = "*"
-starlette = "*"
-requests = "*"
-cryptography = ">=42.0.0"
-pyopenssl = ">=24.0.0"
+pydantic = "2.11.3"
+starlette = "0.46.2"
+requests = "2.32.3"
+cryptography = "44.0.2"
+pyopenssl = "25.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "*"
-debugpy = "*"
-pytest-cov = "^4.0"
+pytest = "8.3.5"
+debugpy = "1.8.14"
+pytest-cov = "6.1.1"
 
 [build-system]
 requires = ["poetry-core"]
