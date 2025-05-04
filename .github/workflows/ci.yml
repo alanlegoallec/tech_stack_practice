@@ -7,41 +7,41 @@ on:
     branches: [main, develop, ci-test]
 
 jobs:
-  # linting:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-  #     - name: Install Poetry
-  #       run: |
-  #         curl -sSL https://install.python-poetry.org | python3 -
-  #         echo "Poetry installed"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "Poetry installed"
 
-  #     - name: Install backend and frontend dependencies with Poetry
-  #       run: |
-  #         # Backend dependencies
-  #         cd ./backend
-  #         poetry config virtualenvs.create false
-  #         poetry install
+      - name: Install backend and frontend dependencies with Poetry
+        run: |
+          # Backend dependencies
+          cd ./backend
+          poetry config virtualenvs.create false
+          poetry install
 
-  #         # Frontend dependencies
-  #         cd ../frontend
-  #         poetry config virtualenvs.create false
-  #         poetry install
+          # Frontend dependencies
+          cd ../frontend
+          poetry config virtualenvs.create false
+          poetry install
 
-  #     - name: Install pre-commit hooks
-  #       run: |
-  #         pip install pre-commit
-  #         pre-commit install
+      - name: Install pre-commit hooks
+        run: |
+          pip install pre-commit
+          pre-commit install
 
-  #     - name: Run pre-commit checks
-  #       run: |
-  #         pre-commit run --all-files
+      - name: Run pre-commit checks
+        run: |
+          pre-commit run --all-files
 
   dependency-scan:
     runs-on: ubuntu-latest
@@ -76,132 +76,132 @@ jobs:
         run: |
           trivy fs --exit-code 1 --no-progress .
 
-  # test-coverage:
-  #   runs-on: ubuntu-latest
-  #   #needs: linting # Only run if linting job passes
-  #   env:
-  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  #   steps:
-  #     - uses: actions/checkout@v4
+  test-coverage:
+    runs-on: ubuntu-latest
+    #needs: linting # Only run if linting job passes
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-  #     - name: Install Poetry
-  #       run: |
-  #         curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
 
-  #     - name: Install dependencies
-  #       run: |
-  #         # Install backend dependencies
-  #         cd ./backend
-  #         poetry install
+      - name: Install dependencies
+        run: |
+          # Install backend dependencies
+          cd ./backend
+          poetry install
 
-  #     - name: Rename .env.ci to .env
-  #       run: mv .env.ci .env
+      - name: Rename .env.ci to .env
+        run: mv .env.ci .env
 
-  #     - name: Run backend tests with coverage
-  #       run: make test-coverage
+      - name: Run backend tests with coverage
+        run: make test-coverage
 
-  #     - name: Upload coverage reports to Codecov
-  #       uses: codecov/codecov-action@v5
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
-  #         file: ./backend/coverage.xml # Specify the coverage report file
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./backend/coverage.xml # Specify the coverage report file
 
-  # # Job to run unit tests
-  # unit-tests:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  #   steps:
-  #     - uses: actions/checkout@v4
+  # Job to run unit tests
+  unit-tests:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-  #     - name: Install Poetry
-  #       run: |
-  #         curl -sSL https://install.python-poetry.org | python3 -
-  #         echo "Poetry installed"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "Poetry installed"
 
-  #     - name: Install backend and frontend dependencies with Poetry
-  #       run: |
-  #         # Ensure Poetry is used globally
-  #         echo "Poetry Version: $(poetry --version)"
+      - name: Install backend and frontend dependencies with Poetry
+        run: |
+          # Ensure Poetry is used globally
+          echo "Poetry Version: $(poetry --version)"
 
-  #         # Backend dependencies
-  #         cd ./backend
-  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-  #         poetry install
+          # Backend dependencies
+          cd ./backend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install
 
-  #         # Frontend dependencies
-  #         cd ../frontend
-  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-  #         poetry install
+          # Frontend dependencies
+          cd ../frontend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install
 
-  #     - name: Run unit tests
-  #       run: |
-  #         cd ./backend
-  #         pytest tests/unit  # Run unit tests only from the "unit" folder
+      - name: Run unit tests
+        run: |
+          cd ./backend
+          pytest tests/unit  # Run unit tests only from the "unit" folder
 
-  # # Job to run integration tests
-  # integration-tests:
-  #   runs-on: ubuntu-latest
-  #   needs: unit-tests # Ensures integration tests run after unit tests pass
-  #   env:
-  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  #   steps:
-  #     - uses: actions/checkout@v4
+  # Job to run integration tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests # Ensures integration tests run after unit tests pass
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-  #     - name: Install Poetry
-  #       run: |
-  #         curl -sSL https://install.python-poetry.org | python3 -
-  #         echo "Poetry installed"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "Poetry installed"
 
-  #     - name: Install backend and frontend dependencies with Poetry
-  #       run: |
-  #         # Ensure Poetry is used globally
-  #         echo "Poetry Version: $(poetry --version)"
+      - name: Install backend and frontend dependencies with Poetry
+        run: |
+          # Ensure Poetry is used globally
+          echo "Poetry Version: $(poetry --version)"
 
-  #         # Backend dependencies
-  #         cd ./backend
-  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-  #         poetry install
+          # Backend dependencies
+          cd ./backend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install
 
-  #         # Frontend dependencies
-  #         cd ../frontend
-  #         poetry config virtualenvs.create false  # Disable virtualenvs if not already done
-  #         poetry install
+          # Frontend dependencies
+          cd ../frontend
+          poetry config virtualenvs.create false  # Disable virtualenvs if not already done
+          poetry install
 
-  #     - name: Rename .env.ci to .env
-  #       run: mv .env.ci .env
+      - name: Rename .env.ci to .env
+        run: mv .env.ci .env
 
-  #     - name: Run integration tests in Docker
-  #       run: |
-  #         docker compose -f docker-compose.yaml --profile dev run --rm tests
+      - name: Run integration tests in Docker
+        run: |
+          docker compose -f docker-compose.yaml --profile dev run --rm tests
 
-  #     - name: Shut down Docker Compose
-  #       if: always()
-  #       run: |
-  #         docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
+      - name: Shut down Docker Compose
+        if: always()
+        run: |
+          docker compose -f docker-compose.yaml --profile dev down --volumes --remove-orphans
 
   # Job to check if the full stack is up and running
   stack-up-check:
     runs-on: ubuntu-latest
-    # TODO: Alan - needs: integration-tests # Ensure this job runs after integration tests pass
+    needs: integration-tests # Ensure this job runs after integration tests pass
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
