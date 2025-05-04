@@ -55,7 +55,7 @@ coverage.xml
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
+bin/*
 # Node.js dependencies
 node_modules/
 
