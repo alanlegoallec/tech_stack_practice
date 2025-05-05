@@ -11,59 +11,35 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.ds import RandomNumber, multiply_with_random
 
-# --- Configure logging ---
+# --- Logging ---
 logging.basicConfig(level=logging.DEBUG)
 
 
-# --- Database setup function ---
+# --- DB Setup ---
 def setup_database():
-    """Set up the database connection and session."""
-    db_user = os.environ.get("POSTGRES_USER")
-    db_password = os.environ.get("POSTGRES_PASSWORD")
-    db_name = os.environ.get("POSTGRES_DB")
-    db_host = os.environ.get("DB_HOST")
-    db_port = os.environ.get("CONTAINER_DB_PORT")
+    db_user = os.getenv("POSTGRES_USER")
+    db_password = os.getenv("POSTGRES_PASSWORD")
+    db_name = os.getenv("POSTGRES_DB")
+    db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("CONTAINER_DB_PORT")
     DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-    print("DATABASE_URL:", DATABASE_URL)
     logging.info(f"DATABASE_URL: {DATABASE_URL}")
 
-    # Check if any value is missing
     if not all([db_user, db_password, db_name, db_host, db_port]):
-        missing_vars = [
-            var
-            for var, value in zip(
-                [
-                    "POSTGRES_USER",
-                    "POSTGRES_PASSWORD",
-                    "POSTGRES_DB",
-                    "DB_HOST",
-                    "CONTAINER_DB_PORT",
-                ],
-                [db_user, db_password, db_name, db_host, db_port],
-            )
-            if not value
-        ]
-        raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
+        raise ValueError("Missing required DB environment variables.")
 
     engine = create_engine(DATABASE_URL)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return SessionLocal
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-# --- Only initialize DB for non-unit-test runs ---
 SessionLocal = None
-if not os.environ.get("UNIT_TESTS"):
+if not os.getenv("UNIT_TESTS") and os.getenv("BYPASS_DB", "").lower() != "true":
     SessionLocal = setup_database()
 
 
-# --- Dependency for DB session ---
 def get_db():
-    """Dependency to get a database session."""
     if SessionLocal is None:
-        # In unit tests, this will be overridden by dependency_overrides
-        raise RuntimeError(
-            "Database not initialized. This should be overridden in tests."
-        )
+        raise RuntimeError("DB not initialized. Use BYPASS_DB=true for fallback.")
     db = SessionLocal()
     try:
         yield db
@@ -74,34 +50,31 @@ def get_db():
 app = FastAPI(debug=True)
 
 
-# --- Global exception handler for logging all unhandled errors ---
+# --- Global Exception Handler ---
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Global exception handler to log unhandled errors."""
     logging.exception(f"Unhandled error at {request.url.path}: {exc}")
     return JSONResponse(
         status_code=500, content={"detail": f"Internal Server Error: {exc}"}
     )
 
 
+# --- Models ---
 class MultiplyRequest(BaseModel):
-    """Request model for the multiply endpoint."""
-
     number: float
 
 
 class MultiplyResponse(BaseModel):
-    """Response model for the multiply endpoint."""
-
     result: float
     multiplier: float
     explanation: str
 
 
+# --- Endpoint ---
 @app.post("/multiply", response_model=MultiplyResponse)
-def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
-    """Multiply a number by a random number from the database."""
-    print("Random numbers in DB:", db.query(RandomNumber).all())
+def multiply(
+    request: MultiplyRequest, db: Session = Depends(get_db) if SessionLocal else None
+):
     try:
         result, multiplier, explanation = multiply_with_random(request.number, db)
         return MultiplyResponse(
