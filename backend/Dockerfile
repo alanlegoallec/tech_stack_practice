@@ -51,4 +51,5 @@ RUN find . -type d -name "__pycache__" -exec rm -rf {} +
 EXPOSE 5000
 
 # Set default command — uses the environment variable
-CMD ["sh", "-c", "./scripts/wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port 5000"]
+# CMD ["sh", "-c", "./scripts/wait-for-db.sh uvicorn backend.main:app --host 0.0.0.0 --port 5000"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "5000"]
