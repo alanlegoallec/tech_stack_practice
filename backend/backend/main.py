@@ -6,11 +6,82 @@ import os
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+
+from backend.ds import RandomNumber, multiply_with_random
 
 # --- Configure logging ---
 logging.basicConfig(level=logging.DEBUG)
 
+
+# --- Database setup function ---
+def setup_database():
+    """Set up the database connection and session."""
+    db_user = os.environ.get("POSTGRES_USER")
+    db_password = os.environ.get("POSTGRES_PASSWORD")
+    db_name = os.environ.get("POSTGRES_DB")
+    db_host = os.environ.get("DB_HOST")
+    db_port = os.environ.get("CONTAINER_DB_PORT")
+    DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
+    print("DATABASE_URL:", DATABASE_URL)
+    logging.info(f"DATABASE_URL: {DATABASE_URL}")
+
+    # Check if any value is missing
+    if not all([db_user, db_password, db_name, db_host, db_port]):
+        missing_vars = [
+            var
+            for var, value in zip(
+                [
+                    "POSTGRES_USER",
+                    "POSTGRES_PASSWORD",
+                    "POSTGRES_DB",
+                    "DB_HOST",
+                    "CONTAINER_DB_PORT",
+                ],
+                [db_user, db_password, db_name, db_host, db_port],
+            )
+            if not value
+        ]
+        raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
+
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return SessionLocal
+
+
+# --- Only initialize DB for non-unit-test runs ---
+SessionLocal = None
+if not os.environ.get("UNIT_TESTS"):
+    SessionLocal = setup_database()
+
+
+# --- Dependency for DB session ---
+def get_db():
+    """Dependency to get a database session."""
+    if SessionLocal is None:
+        # In unit tests, this will be overridden by dependency_overrides
+        raise RuntimeError(
+            "Database not initialized. This should be overridden in tests."
+        )
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 app = FastAPI(debug=True)
+
+
+# --- Global exception handler for logging all unhandled errors ---
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to log unhandled errors."""
+    logging.exception(f"Unhandled error at {request.url.path}: {exc}")
+    return JSONResponse(
+        status_code=500, content={"detail": f"Internal Server Error: {exc}"}
+    )
 
 
 class MultiplyRequest(BaseModel):
@@ -27,32 +98,53 @@ class MultiplyResponse(BaseModel):
     explanation: str
 
 
-@app.get("/")
-def root():
-    return {"message": "API is running"}
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-
 @app.post("/multiply", response_model=MultiplyResponse)
-def multiply(request: MultiplyRequest):
-    """Multiply a number by 2.5 (no database dependency)."""
-    multiplier = 2.5
-    result = request.number * multiplier
-    explanation = f"Multiplied {request.number} by {multiplier}"
-    return MultiplyResponse(
-        result=result, multiplier=multiplier, explanation=explanation
-    )
+def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
+    """Multiply a number by a random number from the database."""
+    print("Random numbers in DB:", db.query(RandomNumber).all())
+    try:
+        result, multiplier, explanation = multiply_with_random(request.number, db)
+        return MultiplyResponse(
+            result=result, multiplier=multiplier, explanation=explanation
+        )
+    except Exception as e:
+        logging.exception(f"Error in /multiply endpoint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# --- Global exception handler for logging all unhandled errors ---
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    """Global exception handler to log unhandled errors."""
-    logging.exception(f"Unhandled error at {request.url.path}: {exc}")
-    return JSONResponse(
-        status_code=500, content={"detail": f"500 Internal Server Error: {exc}"}
+from backend.ds import RandomNumber  # or wherever RandomNumber is defined
+
+
+@app.get("/debug/db")
+def check_db(db: Session = Depends(get_db)):
+    records = db.query(RandomNumber).all()
+    return [r.value for r in records]
+
+
+from sqlalchemy import text
+
+
+@app.get("/debug/seed-db")
+def seed_db(db: Session = Depends(get_db)):
+    db.execute(
+        text(
+            """
+        CREATE TABLE IF NOT EXISTS random_numbers (
+            id SERIAL PRIMARY KEY,
+            value FLOAT NOT NULL
+        );
+    """
+        )
     )
+
+    db.execute(
+        text(
+            """
+        INSERT INTO random_numbers (value) VALUES
+        (3.14), (1.618), (2.718), (0.577), (4.669);
+    """
+        )
+    )
+
+    db.commit()
+    return {"status": "seeded"}
