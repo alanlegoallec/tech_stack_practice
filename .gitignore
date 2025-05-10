@@ -5,6 +5,7 @@
 env/
 venv/
 ENV/
+backend/backend/.ebextensions/01-env-vars.config
 
 # Python cache and bytecode
 __pycache__/
