@@ -6,10 +6,12 @@ import secrets
 from sqlalchemy import Column, Float, Integer
 from sqlalchemy.orm import Session, declarative_base
 
+from backend.utils import get_secret
+
 Base = declarative_base()
 
 # Only initialize client if API key is present
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = get_secret(os.getenv("OPENAI_SECRET_NAME"))
 client = None
 if api_key:
     from openai import OpenAI

@@ -15,11 +15,14 @@ from backend.ds import RandomNumber, multiply_with_random
 logging.basicConfig(level=logging.DEBUG)
 
 
+from backend.utils import get_secret
+
+
 # --- Database setup function ---
 def setup_database():
     """Set up the database connection and session."""
     db_user = os.environ.get("POSTGRES_USER")
-    db_password = os.environ.get("POSTGRES_PASSWORD")
+    db_password = get_secret(os.getenv("POSTGRES_SECRET_NAME"))
     db_name = os.environ.get("POSTGRES_DB")
     db_host = os.environ.get("DB_HOST")
     db_port = os.environ.get("CONTAINER_DB_PORT")
@@ -34,7 +37,6 @@ def setup_database():
             for var, value in zip(
                 [
                     "POSTGRES_USER",
-                    "POSTGRES_PASSWORD",
                     "POSTGRES_DB",
                     "DB_HOST",
                     "CONTAINER_DB_PORT",
@@ -110,6 +112,11 @@ def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
     except Exception as e:
         logging.exception(f"Error in /multiply endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 
 from backend.ds import RandomNumber  # or wherever RandomNumber is defined
