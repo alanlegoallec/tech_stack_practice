@@ -30,7 +30,7 @@ if ! eb status "$ENV_NAME" --profile "$PROFILE" &>/dev/null; then
   }
 
   # CRITICAL: Do NOT pass unsupported flags here
-  eb create "$ENV_NAME" --profile "$PROFILE"
+eb create "$ENV_NAME" --cfg backend-with-sg --profile "$PROFILE"
 
   # Set environment as default for the current git branch
   eb use "$ENV_NAME" --profile "$PROFILE"
