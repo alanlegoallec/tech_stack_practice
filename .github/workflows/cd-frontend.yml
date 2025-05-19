@@ -1,43 +1,42 @@
-name: CD Frontend
+name: Deploy Frontend to Elastic Beanstalk
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/cd-frontend.yml"
+
+  workflow_dispatch:
 
 jobs:
-  deploy-frontend:
-    name: Deploy Frontend to Elastic Beanstalk
+  deploy:
+    name: Deploy Frontend
     runs-on: ubuntu-latest
 
     env:
       AWS_REGION: us-east-1
-      ENV_NAME: full-stack-practice-frontend-env
-      APP_DIR: frontend
-      PROFILE: deployer-full-stack-practice
+      PROFILE_NAME: deployer-full-stack-practice
 
     steps:
-      - name: Checkout code
+      - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
-      - name: Install dependencies (Poetry)
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          cd $APP_DIR && poetry install --no-interaction --no-root
+      - name: 📦 Install EB CLI
+        run: pip install awsebcli
 
-      - name: Deploy to Elastic Beanstalk
+      - name: 🚀 Deploy frontend
         run: |
-          bash $APP_DIR/scripts/deploy.sh $PROFILE $APP_DIR $ENV_NAME
+          bash frontend/scripts/deploy.sh "" frontend full-stack-practice-frontend-env
