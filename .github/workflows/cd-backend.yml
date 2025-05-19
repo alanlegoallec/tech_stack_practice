@@ -6,6 +6,7 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/cd-backend.yml"
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -37,4 +38,4 @@ jobs:
 
       - name: 🚀 Deploy backend
         run: |
-          bash backend/scripts/deploy.sh $PROFILE_NAME backend full-stack-practice-backend-env
+          bash backend/scripts/deploy.sh "" backend full-stack-practice-backend-env
