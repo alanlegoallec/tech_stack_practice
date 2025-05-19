@@ -52,7 +52,7 @@ def multiply_with_random(number: float, db: Session = None):
     """Fetch a random multiplier and multiply it with the input."""
     # Bypass DB if environment variable is set
     if os.getenv("BYPASS_DB", "").lower() == "true":
-        multiplier = 1.23  # hardcoded fallback
+        multiplier = 6  # hardcoded fallback
     else:
         if db is None:
             raise Exception("No DB session provided.")
