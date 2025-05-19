@@ -10,7 +10,7 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5000").rstrip(
     "/"
 )  # fallback for local dev
 
-st.title("Multiply by a random number")
+st.title("Multiply BY a random number")
 
 number = st.number_input("Enter a number:", min_value=0, value=1)
 
