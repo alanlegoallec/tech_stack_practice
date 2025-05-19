@@ -15,15 +15,18 @@ from backend.ds import RandomNumber, multiply_with_random
 logging.basicConfig(level=logging.DEBUG)
 
 
+from backend.utils import get_secret
+
+
 # --- Database setup function ---
 def setup_database():
     """Set up the database connection and session."""
     db_user = os.environ.get("POSTGRES_USER")
-    db_password = os.environ.get("POSTGRES_PASSWORD")
+    db_password = get_secret(os.getenv("POSTGRES_SECRET_NAME"))
     db_name = os.environ.get("POSTGRES_DB")
     db_host = os.environ.get("DB_HOST")
     db_port = os.environ.get("CONTAINER_DB_PORT")
-    DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
     print("DATABASE_URL:", DATABASE_URL)
     logging.info(f"DATABASE_URL: {DATABASE_URL}")
 
@@ -34,7 +37,6 @@ def setup_database():
             for var, value in zip(
                 [
                     "POSTGRES_USER",
-                    "POSTGRES_PASSWORD",
                     "POSTGRES_DB",
                     "DB_HOST",
                     "CONTAINER_DB_PORT",
@@ -110,3 +112,46 @@ def multiply(request: MultiplyRequest, db: Session = Depends(get_db)):
     except Exception as e:
         logging.exception(f"Error in /multiply endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
+from backend.ds import RandomNumber  # or wherever RandomNumber is defined
+
+
+@app.get("/debug/db")
+def check_db(db: Session = Depends(get_db)):
+    records = db.query(RandomNumber).all()
+    return [r.value for r in records]
+
+
+from sqlalchemy import text
+
+
+@app.get("/debug/seed-db")
+def seed_db(db: Session = Depends(get_db)):
+    db.execute(
+        text(
+            """
+        CREATE TABLE IF NOT EXISTS random_numbers (
+            id SERIAL PRIMARY KEY,
+            value FLOAT NOT NULL
+        );
+    """
+        )
+    )
+
+    db.execute(
+        text(
+            """
+        INSERT INTO random_numbers (value) VALUES
+        (3.14), (1.618), (2.718), (0.577), (4.669);
+    """
+        )
+    )
+
+    db.commit()
+    return {"status": "seeded"}

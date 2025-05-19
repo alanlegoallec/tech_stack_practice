@@ -5,6 +5,7 @@
 env/
 venv/
 ENV/
+*.ebextensions/*config*
 
 # Python cache and bytecode
 __pycache__/

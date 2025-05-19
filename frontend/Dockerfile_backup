@@ -37,7 +37,7 @@ RUN poetry install --only-root
 RUN chmod +x scripts/install-vscode-extensions.sh
 
 # Expose the main frontend port only (others go in docker-compose)
-EXPOSE 8501
+EXPOSE ${CONTAINER_STREAMLIT_PORT}
 
 # Run the app with the configured port
-CMD ["sh", "-c", "streamlit run frontend/streamlit_app.py --server.port=8501 --server.address=0.0.0.0"]
+CMD ["sh", "-c", "streamlit run frontend/streamlit_app.py --server.port=${CONTAINER_STREAMLIT_PORT} --server.address=0.0.0.0"]
