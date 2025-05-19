@@ -9,13 +9,21 @@ cd "$APP_DIR"
 
 echo "🔍 Checking if EB environment '$ENV_NAME' exists..."
 
-# 👇 Use --profile only if not in GitHub Actions and a profile is set
+# Determine profile arguments
 EB_PROFILE_FLAG=""
+AWS_CLI_PROFILE_ARGS=""
 if [[ "$PROFILE" != "default" && -z "${GITHUB_ACTIONS:-}" ]]; then
   EB_PROFILE_FLAG="--profile $PROFILE"
+  AWS_CLI_PROFILE_ARGS="--profile $PROFILE"
 fi
 
-if ! eb status "$ENV_NAME" $EB_PROFILE_FLAG &>/dev/null; then
+# Robust environment existence check (works in CI)
+if ! aws elasticbeanstalk describe-environments \
+  --region us-east-1 \
+  --environment-names "$ENV_NAME" \
+  $AWS_CLI_PROFILE_ARGS \
+  | grep -q '"Status":'; then
+
   echo "🚧 Environment '$ENV_NAME' not found. Initializing and creating..."
 
   CONFIG_FILE=".elasticbeanstalk/config.yml"
