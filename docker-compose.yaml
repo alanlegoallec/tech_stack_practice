@@ -1,0 +1,91 @@
+services:
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
+    ports:
+      - "${HOST_DB_PORT}:${CONTAINER_DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init-multi-db.sh:/docker-entrypoint-initdb.d/init-multi-db.sh
+      - ./data:/docker-entrypoint-initdb.d/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      # start_period: 60s # Give the DB 60 seconds to initialize before health checks start
+    restart: unless-stopped
+
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-app
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_HOST: ${DB_HOST}
+      CONTAINER_DB_PORT: ${CONTAINER_DB_PORT}
+      CONTAINER_API_PORT: ${CONTAINER_API_PORT}
+    ports:
+      - "${HOST_API_PORT}:${CONTAINER_API_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles: ["prod", "dev"]
+
+  frontend-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-app
+    environment:
+      CONTAINER_STREAMLIT_PORT: ${CONTAINER_STREAMLIT_PORT}
+      CONTAINER_API_PORT: ${CONTAINER_API_PORT}
+    ports:
+      - "${HOST_STREAMLIT_PORT}:${CONTAINER_STREAMLIT_PORT}"
+    depends_on:
+      - backend-app
+    restart: unless-stopped
+    profiles: ["prod", "dev"]
+
+  tests:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
+    image: my-backend-app:latest
+    container_name: tests
+    command:
+      [
+        "sh",
+        "-c",
+        "./scripts/wait-for-db.sh pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=75",
+      ]
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
+      DB_HOST: ${DB_HOST}
+      CONTAINER_DB_PORT: ${CONTAINER_DB_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["dev"]
+    volumes:
+      - ./backend:/app
+
+volumes:
+  postgres_data:

@@ -1,0 +1,7 @@
+branch-defaults:
+  default:
+    environment: full-stack-practice-frontend-env
+global:
+  application_name: full-stack-practice-frontend
+  default_region: us-east-1
+  platform: Docker

@@ -1,37 +1,62 @@
 {
   "version": "0.2.0",
   "configurations": [
-      {
-          "description": "Flask app - to be run from outside the container",
-          "name": "Flask - outside",
-          "type": "python",
-          "request": "attach",
-          "connect": {
-            "host": "localhost",
-            "port": 5678
-          },
-          "pathMappings": [
-            {
-              "localRoot": "${workspaceFolder}",
-              "remoteRoot": "/app"
-            }
-          ]
-        },
+    {
+      "description": "FastAPI (Docker) - to be run from outside the container",
+      "name": "FastAPI - remote",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
         {
-          "description": "UI app - to be run from outside the container",
-          "name": "UI - outside",
-          "type": "python",
-          "request": "attach",
-          "connect": {
-            "host": "localhost",
-            "port": 5679
-          },
-          "pathMappings": [
-            {
-              "localRoot": "${workspaceFolder}",
-              "remoteRoot": "/app"
-            }
-          ]
+          "localRoot": "${workspaceFolder}/backend",
+          "remoteRoot": "/app"
+        }
+      ],
+      "justMyCode": false
+    },
+    {
+      "description": "UI app - to be run from outside the container",
+      "name": "UI - remote",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5679
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/frontend",
+          "remoteRoot": "/app"
         },
+      ],
+      "justMyCode": false,
+      "django": false,
+      "subProcess": true,
+      "gevent": true,
+      "jinja": true,
+      "redirectOutput": true,
+      "showReturnValue": true,
+      "debugStdLib": true
+    },
+    {
+      "description": "pytest - to be run from outside the container",
+      "name": "pytest - remote",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5680
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/backend",
+          "remoteRoot": "/app"
+        }
+      ]
+    }
   ]
 }

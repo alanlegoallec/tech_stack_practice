@@ -5,6 +5,7 @@
 env/
 venv/
 ENV/
+*.ebextensions/*config*
 
 # Python cache and bytecode
 __pycache__/
@@ -55,3 +56,9 @@ coverage.xml
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+bin*
+# Node.js dependencies
+node_modules/
+
+# Local mount
+path-to-local*

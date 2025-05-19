@@ -1,20 +1,20 @@
 {
   "version": "0.2.0",
   "configurations": [
-        {
-          "description": "UI app - to be run from within the container",
-          "name": "UI - within",
-          "type": "python",
-          "request": "launch",
-          "program": "/usr/local/bin/streamlit",   // or just "streamlit" if in PATH
-          "args": [
-            "run",
-            "streamlit_app.py",
-            "--server.port=8501",
-            "--server.address=0.0.0.0"
-          ],
-          "console": "integratedTerminal",
-          "justMyCode": true
-        }
+    {
+      "description": "UI app - to be run from within the container",
+      "name": "UI - internal",
+      "type": "python",
+      "request": "launch",
+      "program": "/usr/local/bin/streamlit",
+      "args": [
+        "run",
+        "frontend/streamlit_app.py",
+        "--server.port=${env:CONTAINER_STREAMLIT_PORT}",
+        "--server.address=0.0.0.0"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
   ]
 }

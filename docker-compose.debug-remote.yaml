@@ -1,0 +1,63 @@
+services:
+  backend-app:
+    profiles:
+      - debug-remote
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
+    entrypoint: []
+    command: sh -c "python -m debugpy --listen 0.0.0.0:${CONTAINER_API_PYTHON_DEBUGGER_PORT} --wait-for-client -m uvicorn backend.main:app --host 0.0.0.0 --port ${CONTAINER_API_PORT}"
+    ports:
+      - "${HOST_API_PORT_DEBUG}:${CONTAINER_API_PORT}"
+      - "${HOST_API_VSCODE_DEBUGGER_PORT}:${CONTAINER_API_PYTHON_DEBUGGER_PORT}"
+
+  frontend-app:
+    profiles:
+      - debug-remote
+    env_file:
+      - .env
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
+    environment:
+      - PYTHONPATH=/app
+      - PYDEVD_DISABLE_FILE_VALIDATION=1
+      - PYTHONUNBUFFERED=1
+    entrypoint: []
+    command:
+      - "sh"
+      - "-c"
+      - |
+        python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:${CONTAINER_STREAMLIT_PYTHON_DEBUGGER_PORT} --wait-for-client \
+        -m streamlit run frontend/streamlit_app.py --server.port=${CONTAINER_STREAMLIT_PORT} --server.address=0.0.0.0
+    ports:
+      - "${HOST_STREAMLIT_PORT_DEBUG}:${CONTAINER_STREAMLIT_PORT}"
+      - "${HOST_STREAMLIT_VSCODE_DEBUGGER_PORT}:${CONTAINER_STREAMLIT_PYTHON_DEBUGGER_PORT}"
+
+  tests:
+    profiles:
+      - debug-remote
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
+    entrypoint: []
+    command: >
+      sh -c "python -m debugpy --listen 0.0.0.0:${CONTAINER_PYTEST_PYTHON_DEBUGGER_PORT} --wait-for-client -m pytest --cov=backend --cov-report=xml --cov-report=term-missing --cov-fail-under=75"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB_TEST: ${POSTGRES_DB_TEST}
+      DB_HOST: ${DB_HOST}
+      CONTAINER_DB_PORT: ${CONTAINER_DB_PORT}
+    ports:
+      - "${HOST_PYTEST_VSCODE_DEBUGGER_PORT}:${CONTAINER_PYTEST_PYTHON_DEBUGGER_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
