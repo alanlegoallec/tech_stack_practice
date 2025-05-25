@@ -49,6 +49,7 @@
 │   │   │       ├── auth.py
 │   │   │       └── core.py
 │   │   ├── core
+│   │   │   ├── error_handlers.py
 │   │   │   ├── security.py
 │   │   │   └── utils.py
 │   │   ├── crud
@@ -149,4 +150,4 @@
 │   └── upload_to_s3.py
 └── setup.cfg
 
-48 directories, 102 files
+48 directories, 103 files

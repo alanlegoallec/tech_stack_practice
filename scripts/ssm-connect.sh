@@ -3,25 +3,13 @@ set -e
 
 PROFILE="devops-full-stack-practice"
 
-ENV_NAMES=("full-stack-practice-backend-env" "full-stack-practice-frontend-env")
-
-echo "👉 Select environment to connect via SSM:"
-i=1
-for ENV in "${ENV_NAMES[@]}"; do
-    echo "$i) $ENV"
-    i=$((i+1))
-done
-
-read -p "Enter choice [1-${#ENV_NAMES[@]}]: " CHOICE
-
-INDEX=$((CHOICE - 1))
-
-if [ "$INDEX" -lt 0 ] || [ "$INDEX" -ge "${#ENV_NAMES[@]}" ]; then
-    echo "❌ Invalid choice"
-    exit 1
+if [ -z "$1" ]; then
+  echo "❌ Usage: $0 <environment-name>"
+  echo "Example: $0 full-stack-practice-backend-env"
+  exit 1
 fi
 
-ENV_NAME="${ENV_NAMES[$INDEX]}"
+ENV_NAME="$1"
 
 echo "🔍 Finding EC2 instance for environment: $ENV_NAME"
 
@@ -32,8 +20,8 @@ INSTANCE_ID=$(aws elasticbeanstalk describe-environment-resources \
   --profile "$PROFILE")
 
 if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" = "None" ]; then
-    echo "❌ No running EC2 instance found for $ENV_NAME"
-    exit 1
+  echo "❌ No running EC2 instance found for $ENV_NAME"
+  exit 1
 fi
 
 echo "✅ Found instance: $INSTANCE_ID"
