@@ -118,3 +118,7 @@ copy-vscode-extensions-install-script:
 	cp scripts/install-vscode-extensions.sh $(BACKEND_DIR)/scripts/
 	cp scripts/install-vscode-extensions.sh $(FRONTEND_DIR)/scripts/
 	@echo "✅ Successfully copied to both directories."
+
+# Display directory structure, helpful to debug with LLMs
+tree:
+	tree -L 5 -a -I '.git|.pytest_cache|__pycache__|path-to-local-vscode-extensions|*app_versions*'

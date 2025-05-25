@@ -15,6 +15,7 @@ EB_ENV_NAME="$(
   echo "unknown"
 )"
 LOG_GROUP="/eb/docker/${EB_ENV_NAME//[^A-Za-z0-9._/-]/-}"
+AGENT_GROUP="/aws/cloudwatch-agent/frontend"
 REGION="$(curl -s --retry 3 --connect-timeout 2 http://169.254.169.254/latest/meta-data/placement/region || echo "${AWS_REGION:-us-east-1}")"
 
 log "Environment = $EB_ENV_NAME, Log group = $LOG_GROUP, Region = $REGION"
@@ -45,9 +46,9 @@ cat > "$CW_DIR/amazon-cloudwatch-agent.json" <<EOF
           },
           {
             "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
-            "log_group_name": "$LOG_GROUP",
-            "log_stream_name": "{instance_id}-CWAgent",
-            "retention_in_days": 30,
+            "log_group_name": "$AGENT_GROUP",
+            "log_stream_name": "{instance_id}",
+            "retention_in_days": 7,
             "timezone": "UTC"
           }
         ]
