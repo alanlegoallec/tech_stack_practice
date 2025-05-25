@@ -92,7 +92,7 @@ logs-frontend:
 logs-backend:
 	@echo "📜 Tailing Backend logs from CloudWatch..."
 	aws logs tail /eb/docker/backend --follow --profile $(DEPLOY_PROFILE)
-	
+
 ssm-backend:
 	./scripts/ssm-connect.sh full-stack-practice-backend-env
 
