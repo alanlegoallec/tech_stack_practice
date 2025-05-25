@@ -1,19 +1,16 @@
 # backend/backend/db.py
-import logging
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from backend.core.utils import get_secret
+from backend.core.utils import get_secret_value, require_env_var
 
 
 def _build_url():
-    user = os.getenv("POSTGRES_USER")
-    pwd = get_secret(os.getenv("POSTGRES_SECRET_NAME"))
-    name = os.getenv("POSTGRES_DB")
-    host = os.getenv("DB_HOST")
-    port = os.getenv("CONTAINER_DB_PORT")
+    user = require_env_var("POSTGRES_USER")
+    pwd = get_secret_value(require_env_var("POSTGRES_SECRET_NAME"))
+    name = require_env_var("POSTGRES_DB")
+    host = require_env_var("DB_HOST")
+    port = require_env_var("CONTAINER_DB_PORT")
     return f"postgresql://{user}:{pwd}@{host}:{port}/{name}?sslmode=require"
 
 

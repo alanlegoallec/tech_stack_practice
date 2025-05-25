@@ -78,7 +78,7 @@ deploy-backend:
 
 ## 🔐 Secrets Management
 
-- **DB Password**: Fetched from AWS Secrets Manager using a custom `get_secret` function
+- **DB Password**: Fetched from AWS Secrets Manager using a custom `get_secret_value` function
 - **Other Secrets**: Managed as environment variables or SSM Parameters (e.g., OpenAI API Key)
 
 ---

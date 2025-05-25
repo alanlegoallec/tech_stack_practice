@@ -5,15 +5,19 @@ import os
 import secrets
 import time
 
-from sqlalchemy import Column, Float, Integer
-from sqlalchemy.orm import Session, declarative_base
+from sqlalchemy.orm import Session
 
-from backend.core.utils import get_secret, load_names_df, log_multiplication_to_s3
+from backend.core.utils import (
+    get_secret_value,
+    load_names_df,
+    log_multiplication_to_s3,
+    require_env_var,
+)
 from backend.models.random_number import RandomNumber
 from backend.services.llm import summarize_product
 
 # Only initialize client if API key is present
-api_key = get_secret(os.getenv("OPENAI_SECRET_NAME"))
+api_key = get_secret_value(require_env_var("OPENAI_SECRET_NAME"))
 client = None
 if api_key:
     from openai import OpenAI

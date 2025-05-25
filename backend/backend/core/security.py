@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException, status
@@ -6,11 +5,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from backend.core.utils import get_secret
+from backend.core.utils import get_secret_value, require_env_var
 from backend.models.user import User
 
 # Config
-SECRET_KEY = get_secret(os.environ["JWT_SECRET_NAME"])
+SECRET_KEY = get_secret_value(require_env_var("JWT_SECRET_NAME"))
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

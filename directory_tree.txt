@@ -22,9 +22,9 @@
 │   ├── .ebextensions
 │   │   ├── 00-healthcheck.config
 │   │   ├── 01-env-vars.config
-│   │   ├── 01-no-http.config
-│   │   ├── 01-remove-http-listener.config
-│   │   └── 02-https-listener.config
+│   │   ├── 02-disable-http.config
+│   │   ├── 03-remove-http-listener.config
+│   │   └── 04-enable-https-listener.config
 │   ├── .elasticbeanstalk
 │   │   ├── config.yml
 │   │   ├── config.yml.bak
@@ -38,8 +38,8 @@
 │   │   └── hooks
 │   │       └── postdeploy
 │   │           ├── 01-add-ec2-user-to-docker.sh
-│   │           ├── 01-ensure-ssm.sh
-│   │           └── 01-stream-docker-logs.sh
+│   │           ├── 02-ensure-ssm.sh
+│   │           └── 03-stream-docker-logs.sh
 │   ├── .vscode
 │   │   └── launch.json
 │   ├── backend
@@ -106,8 +106,8 @@
 ├── frontend
 │   ├── .ebextensions
 │   │   ├── 01-env-vars.config
-│   │   ├── 01-redirect-https.config
-│   │   └── 02-https-listener.config
+│   │   ├── 02-redirect-to-https.config
+│   │   └── 03-enable-https-listener.config
 │   ├── .elasticbeanstalk
 │   │   ├── config.yml
 │   │   └── config.yml.bak
@@ -116,8 +116,8 @@
 │   │   └── hooks
 │   │       └── postdeploy
 │   │           ├── 01-add-ec2-user-to-docker.sh
-│   │           ├── 01-ensure-ssm.sh
-│   │           └── 01-stream-docker-logs.sh
+│   │           ├── 02-ensure-ssm.sh
+│   │           └── 03-stream-docker-logs.sh
 │   ├── .vscode
 │   │   └── launch.json
 │   ├── Dockerfile
