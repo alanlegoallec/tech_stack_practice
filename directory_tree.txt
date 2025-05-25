@@ -1,0 +1,152 @@
+.
+├── .coverage
+├── .devcontainer
+│   └── devcontainer.json
+├── .env
+├── .env.ci
+├── .github
+│   ├── dependabot.yml
+│   └── workflows
+│       ├── cd-backend.yml
+│       ├── cd-frontend.yml
+│       └── ci.yml
+├── .gitignore
+├── .pre-commit-config.yaml
+├── .prettierrc
+├── .pydocstyle
+├── .vscode
+│   ├── launch.json
+│   └── settings.json
+├── backend
+│   ├── .coverage
+│   ├── .ebextensions
+│   │   ├── 00-healthcheck.config
+│   │   ├── 01-env-vars.config
+│   │   ├── 01-no-http.config
+│   │   ├── 01-remove-http-listener.config
+│   │   └── 02-https-listener.config
+│   ├── .elasticbeanstalk
+│   │   ├── config.yml
+│   │   ├── config.yml.bak
+│   │   ├── full-stack-practice-backend-env.env.yml.save
+│   │   └── logs
+│   │       ├── 250504_184602
+│   │       │   └── i-018c901e9f9fea590
+│   │       └── latest -> /Users/alanlegoallec/Desktop/full-stack-practice/backend/.elasticbeanstalk/logs/250504_184602
+│   ├── .gitignore
+│   ├── .platform
+│   │   └── hooks
+│   │       └── postdeploy
+│   │           ├── 01-add-ec2-user-to-docker.sh
+│   │           ├── 01-ensure-ssm.sh
+│   │           └── 01-stream-docker-logs.sh
+│   ├── .vscode
+│   │   └── launch.json
+│   ├── backend
+│   │   ├── __init__.py
+│   │   ├── api
+│   │   │   └── routes
+│   │   │       ├── auth.py
+│   │   │       └── core.py
+│   │   ├── core
+│   │   │   ├── security.py
+│   │   │   └── utils.py
+│   │   ├── crud
+│   │   ├── db
+│   │   │   └── session.py
+│   │   ├── main.py
+│   │   ├── models
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── random_number.py
+│   │   │   └── user.py
+│   │   ├── schemas
+│   │   │   ├── core.py
+│   │   │   └── user.py
+│   │   └── services
+│   │       ├── ds.py
+│   │       └── llm.py
+│   ├── backend.egg-info
+│   │   ├── dependency_links.txt
+│   │   ├── PKG-INFO
+│   │   ├── requires.txt
+│   │   ├── SOURCES.txt
+│   │   └── top_level.txt
+│   ├── bin
+│   │   └── trivy
+│   ├── coverage.xml
+│   ├── Dockerfile
+│   ├── poetry.lock
+│   ├── Profile
+│   ├── pyproject.toml
+│   ├── scripts
+│   │   ├── deploy.sh
+│   │   ├── install-vscode-extensions.sh
+│   │   ├── ssh-to-backend.sh
+│   │   └── wait-for-db.sh
+│   └── tests
+│       ├── integration
+│       │   ├── test_logging_to_s3.py
+│       │   └── test_main_integration.py
+│       └── unit
+│           └── test_main_unit.py
+├── coverage.xml
+├── data
+│   ├── names_and_numbers.csv
+│   └── random_numbers.csv
+├── db
+│   ├── init-multi-db.sh
+│   └── init.sql
+├── deployment-guide.md
+├── directory_tree.txt
+├── docker-compose.debug-internal.yaml
+├── docker-compose.debug-remote.yaml
+├── docker-compose.yaml
+├── frontend
+│   ├── .ebextensions
+│   │   ├── 01-env-vars.config
+│   │   ├── 01-redirect-https.config
+│   │   └── 02-https-listener.config
+│   ├── .elasticbeanstalk
+│   │   ├── config.yml
+│   │   └── config.yml.bak
+│   ├── .gitignore
+│   ├── .platform
+│   │   └── hooks
+│   │       └── postdeploy
+│   │           ├── 01-add-ec2-user-to-docker.sh
+│   │           ├── 01-ensure-ssm.sh
+│   │           └── 01-stream-docker-logs.sh
+│   ├── .vscode
+│   │   └── launch.json
+│   ├── Dockerfile
+│   ├── Dockerfile_backup
+│   ├── frontend
+│   │   ├── __init__.py
+│   │   ├── .elasticbeanstalk
+│   │   │   └── config.yml
+│   │   └── streamlit_app.py
+│   ├── poetry.lock
+│   ├── pyproject.toml
+│   ├── scripts
+│   │   ├── deploy.sh
+│   │   ├── install-vscode-extensions.sh
+│   │   └── ssh-to-frontend.sh
+│   └── tests
+│       ├── integration
+│       └── unit
+├── Makefile
+├── notebooks
+│   └── 📘 inspect_multiplication_log.ipynb
+├── pytest.ini
+├── README.md
+├── scripts
+│   ├── clean_docker.sh
+│   ├── generate_csv.py
+│   ├── install-vscode-extensions.sh
+│   ├── ssm-connect.sh
+│   ├── unset_env.sh
+│   └── upload_to_s3.py
+└── setup.cfg
+
+48 directories, 102 files
