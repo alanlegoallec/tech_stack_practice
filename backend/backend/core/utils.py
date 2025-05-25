@@ -67,7 +67,7 @@ def log_multiplication_to_s3(
     user_input: float,
     multiplier: float,
     product: float,
-    name: str,
+    name: str | None,
     explanation: str,
     latency_ms: float,
     client_ip: str,

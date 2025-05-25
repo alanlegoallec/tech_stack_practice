@@ -25,7 +25,9 @@ if api_key:
     client = OpenAI(api_key=api_key)
 
 
-def multiply_with_random(number: float, db: Session = None, client_ip: str = "unknown"):
+def multiply_with_random(
+    number: float, db: Session | None = None, client_ip: str = "unknown"
+):
     start = time.time()
 
     if os.getenv("BYPASS_DB", "").lower() == "true":
@@ -36,20 +38,20 @@ def multiply_with_random(number: float, db: Session = None, client_ip: str = "un
         records = db.query(RandomNumber).all()
         if not records:
             raise ValueError("No random numbers found in the database.")
-        multiplier = secrets.choice(records).value
+        random_row = secrets.choice(records)
+        multiplier = float(getattr(random_row, "value"))
 
     result = number * multiplier
     explanation = summarize_product(number, multiplier, result, client)
 
-    try:
-        df = load_names_df()
+    df = load_names_df()
+    if df is not None:
         closest = df.iloc[(df["number"] - result).abs().argmin()]
         name = closest["name"]
         explanation += f" Closest name: {name}"
-
-    except Exception as e:
+    else:
         name = None
-        explanation += f" (Could not match name from S3: {e})"
+        explanation += " (Could not match name from S3)"
 
     latency = (time.time() - start) * 1000
     try:
