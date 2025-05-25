@@ -1,16 +1,16 @@
 import os
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from backend.core.utils import get_secret
 from backend.models.user import User
 
 # Config
-SECRET_KEY = os.environ.get("JWT_SECRET", "your-secret-key")
+SECRET_KEY = get_secret(os.environ["JWT_SECRET_NAME"])
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
