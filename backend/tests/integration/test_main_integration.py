@@ -7,8 +7,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from backend.ds import Base, RandomNumber
 from backend.main import app, get_db
+from backend.services.ds import Base, RandomNumber
 
 # Use the same DB URL as your app (from env vars)
 db_user = os.environ["POSTGRES_USER"]

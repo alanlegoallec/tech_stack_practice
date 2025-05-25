@@ -121,4 +121,4 @@ copy-vscode-extensions-install-script:
 
 # Display directory structure, helpful to debug with LLMs
 tree:
-	tree -L 5 -a -I '.git|.pytest_cache|__pycache__|path-to-local-vscode-extensions|*app_versions*'
+	tree -L 5 -a -I '.git|.pytest_cache|__pycache__|path-to-local-vscode-extensions|*app_versions*' > directory_tree.txt
