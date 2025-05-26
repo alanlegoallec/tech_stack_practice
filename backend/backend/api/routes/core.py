@@ -29,29 +29,24 @@ def multiply(
     _current_user=Depends(get_current_user),
 ):
     """Multiply a number by a random number from the database and log to S3."""
-    return MultiplyResponse(
-        result=1,
-        multiplier=1,
-        explanation="hello",
-    )
-    # try:
-    #     client_ip = request.client.host if request.client else "unknown"
-    # except Exception:
-    #     client_ip = "unknown"
+    try:
+        client_ip = request.client.host if request.client else "unknown"
+    except Exception:
+        client_ip = "unknown"
 
-    # logging.info(f"Received request from {client_ip} with number={request_data.number}")
+    logging.info(f"Received request from {client_ip} with number={request_data.number}")
 
-    # try:
-    #     result, multiplier, explanation = multiply_with_random(
-    #         request_data.number,
-    #         db=db,
-    #         client_ip=client_ip,
-    #     )
-    #     return MultiplyResponse(
-    #         result=result,
-    #         multiplier=multiplier,
-    #         explanation=explanation,
-    #     )
-    # except Exception as e:
-    #     logging.exception("Error in /multiply endpoint")
-    #     raise HTTPException(status_code=500, detail=str(e))
+    try:
+        result, multiplier, explanation = multiply_with_random(
+            request_data.number,
+            db=db,
+            client_ip=client_ip,
+        )
+        return MultiplyResponse(
+            result=result,
+            multiplier=multiplier,
+            explanation=explanation,
+        )
+    except Exception as e:
+        logging.exception("Error in /multiply endpoint")
+        raise HTTPException(status_code=500, detail=str(e))
