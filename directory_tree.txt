@@ -45,15 +45,20 @@
 │   ├── backend
 │   │   ├── __init__.py
 │   │   ├── api
+│   │   │   ├── __init__.py
 │   │   │   └── routes
+│   │   │       ├── __init__.py
 │   │   │       ├── auth.py
 │   │   │       └── core.py
 │   │   ├── core
+│   │   │   ├── __init__.py
 │   │   │   ├── error_handlers.py
 │   │   │   ├── security.py
 │   │   │   └── utils.py
 │   │   ├── crud
+│   │   │   └── __init__.py
 │   │   ├── db
+│   │   │   ├── __init__.py
 │   │   │   └── session.py
 │   │   ├── main.py
 │   │   ├── models
@@ -62,9 +67,11 @@
 │   │   │   ├── random_number.py
 │   │   │   └── user.py
 │   │   ├── schemas
+│   │   │   ├── __init__.py
 │   │   │   ├── core.py
 │   │   │   └── user.py
 │   │   └── services
+│   │       ├── __init__.py
 │   │       ├── ds.py
 │   │       └── llm.py
 │   ├── backend.egg-info
@@ -150,4 +157,4 @@
 │   └── upload_to_s3.py
 └── setup.cfg
 
-48 directories, 103 files
+48 directories, 110 files

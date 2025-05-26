@@ -5,6 +5,10 @@ PROFILE="${1:-default}"
 APP_DIR="$2"
 ENV_NAME="$3"
 
+APP_NAME="full-stack-practice-backend"
+REGION="us-east-1"
+PLATFORM="Docker"
+
 cd "$APP_DIR"
 
 echo "🔍 Checking if EB environment '$ENV_NAME' exists..."
@@ -17,31 +21,26 @@ if [[ "$PROFILE" != "default" && -z "${GITHUB_ACTIONS:-}" ]]; then
   AWS_CLI_PROFILE_ARGS="--profile $PROFILE"
 fi
 
-# Always init to set up local .elasticbeanstalk config
-echo "⚙️ Running eb init to configure local directory..."
-CONFIG_FILE=".elasticbeanstalk/config.yml"
-if [[ -f "$CONFIG_FILE" ]]; then
-  echo "🩹 Removing stale default_ec2_keyname..."
-  sed -i.bak '/default_ec2_keyname/d' "$CONFIG_FILE"
-fi
+# 💣 Always wipe local EB config to avoid drift
+echo "🧹 Removing old .elasticbeanstalk config..."
+rm -rf .elasticbeanstalk
 
-eb init \
+# ⚙️ Reinitialize EB CLI config
+echo "⚙️ Running eb init..."
+eb init "$APP_NAME" \
+  --platform "$PLATFORM" \
+  --region "$REGION" \
   $EB_PROFILE_FLAG \
-  --platform "Docker" \
-  --region "us-east-1" \
-  --keyname "" || {
-    echo "❌ eb init failed. Aborting."
-    exit 1
-}
+  --quiet
 
-# Check if environment exists (works in CI)
+# 🌱 Create env if it doesn't exist
 if ! aws elasticbeanstalk describe-environments \
-  --region us-east-1 \
+  --region "$REGION" \
   --environment-names "$ENV_NAME" \
   $AWS_CLI_PROFILE_ARGS \
   | grep -q '"Status":'; then
 
-  echo "🌱 Creating new EB environment '$ENV_NAME'..."
+  echo "🌱 Creating EB environment '$ENV_NAME' using saved config 'backend-with-sg'..."
   eb create "$ENV_NAME" --cfg backend-with-sg $EB_PROFILE_FLAG || {
     echo "❌ eb create failed. Aborting."
     exit 1
@@ -50,9 +49,9 @@ else
   echo "✅ Environment '$ENV_NAME' already exists."
 fi
 
-# Set the environment
+# 📌 Set default environment
 eb use "$ENV_NAME" $EB_PROFILE_FLAG
 
-# Deploy
+# 🚀 Deploy
 echo "🚀 Deploying to '$ENV_NAME'..."
-eb deploy $EB_PROFILE_FLAG
+eb deploy --staged $EB_PROFILE_FLAG

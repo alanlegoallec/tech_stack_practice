@@ -21,6 +21,9 @@ ADMIN_PROFILE=admin-debug
 FRONTEND_DIR=frontend
 BACKEND_DIR=backend
 
+# RDS DB identifier
+RDS_DB_ID=numbers-db
+
 ###############################################################################
 # 🚀 Docker Targets
 ###############################################################################
@@ -57,11 +60,19 @@ deploy-backend:
 	@echo "🚀 Deploying Backend..."
 	@$(BACKEND_DIR)/scripts/deploy.sh $(DEPLOY_PROFILE) $(BACKEND_DIR) full-stack-practice-backend-env
 
+init-rds:
+	@echo "🗄️ Initializing RDS database with schema and data at $$(grep ^RDS_DB_HOST .env | cut -d '=' -f2)..."
+	@bash db/init-rds.sh
+
 deploy-all:
+	@echo "🌱 Recreating RDS instance..."
+	@bash backend/scripts/create-rds.sh $(DEPLOY_PROFILE) $(RDS_DB_ID)
+	@echo "🗄️ Initializing RDS database..."
+	@$(MAKE) init-rds
 	@echo "🚀 Deploying Frontend and Backend in parallel..."
 	@$(MAKE) deploy-frontend & \
-	 $(MAKE) deploy-backend & \
-	 wait
+     $(MAKE) deploy-backend & \
+     wait
 	@echo "✅ Deployment complete."
 
 ###############################################################################
@@ -75,11 +86,16 @@ clean-backend:
 	cd $(BACKEND_DIR) && eb terminate full-stack-practice-backend-env --force --profile $(ADMIN_PROFILE)
 
 clean-all:
-	@echo "🧹 Terminating frontend and backend environments in parallel..."
+	@echo "🧹 Terminating frontend and backend environments and deleting RDS..."
 	$(MAKE) clean-frontend &
 	$(MAKE) clean-backend &
 	wait
-	@echo "✅ Both environments terminated."
+	aws rds delete-db-instance \
+	  --db-instance-identifier $(RDS_DB_ID) \
+	  --skip-final-snapshot \
+	  --region us-east-1 \
+	  --profile $(ADMIN_PROFILE)
+	@echo "✅ All environments and RDS deleted."
 
 ###############################################################################
 # 📜 Logs and Debug Utilities

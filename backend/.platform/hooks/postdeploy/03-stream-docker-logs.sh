@@ -1,5 +1,5 @@
 #!/bin/bash
-# Robust CloudWatch log streaming for EB Docker (AL2023)
+# Stream container logs to CloudWatch (app logs only, no agent logs)
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -7,7 +7,6 @@ log()  { echo "[${TZ:=UTC} $(date -u +'%Y-%m-%dT%H:%M:%SZ')] $*"; }
 fail(){ echo "[${TZ:=UTC} $(date -u +'%Y-%m-%dT%H:%M:%SZ')] FATAL: $*" >&2; exit 1; }
 warn(){ echo "[${TZ:=UTC} $(date -u +'%Y-%m-%dT%H:%M:%SZ')] WARN: $*" >&2; }
 
-### 0. Constants ###############################################################
 LOG_FILE="/var/log/docker-app.log"
 EB_ENV_NAME="$(
   /opt/elasticbeanstalk/bin/get-config container -k environment_name 2>/dev/null || \
@@ -15,12 +14,11 @@ EB_ENV_NAME="$(
   echo "unknown"
 )"
 LOG_GROUP="/eb/docker/${EB_ENV_NAME//[^A-Za-z0-9._/-]/-}"
-AGENT_GROUP="/aws/cloudwatch-agent/backend"
 REGION="$(curl -s --retry 3 --connect-timeout 2 http://169.254.169.254/latest/meta-data/placement/region || echo "${AWS_REGION:-us-east-1}")"
 
 log "Environment = $EB_ENV_NAME, Log group = $LOG_GROUP, Region = $REGION"
 
-### 1. Ensure CloudWatch Agent installed ######################################
+### Ensure CloudWatch Agent is installed
 if ! rpm -q amazon-cloudwatch-agent &>/dev/null; then
   log "Installing amazon-cloudwatch-agent..."
   dnf install -y amazon-cloudwatch-agent || fail "CloudWatch Agent install failed"
@@ -28,7 +26,7 @@ else
   log "CloudWatch Agent already installed"
 fi
 
-### 2. Create CloudWatch Agent config (idempotent) ############################
+### Write minimal CloudWatch Agent config (app logs only)
 CW_DIR=/opt/aws/amazon-cloudwatch-agent/etc
 mkdir -p "$CW_DIR"
 cat > "$CW_DIR/amazon-cloudwatch-agent.json" <<EOF
@@ -43,13 +41,6 @@ cat > "$CW_DIR/amazon-cloudwatch-agent.json" <<EOF
             "log_stream_name": "{instance_id}",
             "retention_in_days": 30,
             "timezone": "UTC"
-          },
-          {
-            "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
-            "log_group_name": "$AGENT_GROUP",
-            "log_stream_name": "{instance_id}",
-            "retention_in_days": 7,
-            "timezone": "UTC"
           }
         ]
       }
@@ -57,9 +48,9 @@ cat > "$CW_DIR/amazon-cloudwatch-agent.json" <<EOF
   }
 }
 EOF
-log "Wrote CloudWatch Agent config"
+log "Wrote simplified CloudWatch config (no agent logs)"
 
-### 3. Logrotate for docker-app.log ###########################################
+### Logrotate setup
 cat >/etc/logrotate.d/docker-app <<'EOF'
 /var/log/docker-app.log {
   daily
@@ -72,7 +63,7 @@ cat >/etc/logrotate.d/docker-app <<'EOF'
 }
 EOF
 
-### 4. Create forwarder script #################################################
+### Create container log forwarder
 mkdir -p /opt/docker-logs
 WRAPPER=/opt/docker-logs/stream-docker-logs.sh
 cat > "$WRAPPER" <<'EOS'
@@ -95,7 +86,7 @@ done
 EOS
 chmod +x "$WRAPPER"
 
-### 5. systemd unit for forwarder #############################################
+### Register as systemd service
 cat > /etc/systemd/system/docker-logs-forwarder.service <<EOF
 [Unit]
 Description=Forward Docker container logs to file for CloudWatch
@@ -116,23 +107,16 @@ systemctl daemon-reload
 systemctl enable --now docker-logs-forwarder.service
 log "Forwarder service started"
 
-### 6. Start CloudWatch Agent with file config ################################
+### Start CloudWatch Agent with clean config
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop || true
 if /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
      -a start \
      -m ec2 \
      -c "file:${CW_DIR}/amazon-cloudwatch-agent.json" \
      -s; then
-  log "CloudWatch Agent started with persisted file config"
+  log "CloudWatch Agent started with simplified config"
 else
   fail "CloudWatch Agent failed to start"
 fi
 
-### 7. Verification summary ####################################################
-log "Verification:"
-systemctl -q is-active docker-logs-forwarder.service && log "✔ docker-logs-forwarder active" || fail "docker-logs-forwarder inactive"
-systemctl -q is-active amazon-cloudwatch-agent.service && log "✔ CWAgent active" || fail "CWAgent inactive"
-test -s "$LOG_FILE" && log "✔ $LOG_FILE exists & non-empty" || warn "Log file empty (app may not have emitted yet)"
-ls -1 "$CW_DIR"/amazon-cloudwatch-agent.d/ 2>/dev/null | grep -q . && log "✔ Agent runtime config persisted" || warn "Agent runtime config not found (but service is running)"
-
-log "🎉 Post-deploy logging setup complete"
+log "🎉 Logging setup complete (agent logs excluded)"
