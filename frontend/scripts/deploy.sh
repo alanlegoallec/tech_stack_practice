@@ -1,45 +1,77 @@
 #!/bin/bash
 set -euo pipefail
 
-PROFILE="${1:-default}"
-APP_DIR="$2"
-ENV_NAME="$3"
+###############################################################################
+# 📝 Shared Deploy Script
+#
+# This script is IDENTICAL in both backend/scripts/ and frontend/scripts/.
+# If you modify it in one location, you MUST copy it to the other to stay in sync.
+#
+# Usage:
+#   ./scripts/deploy.sh <aws_profile> <app_dir> <env_name> <app_name> [config_name]
+#
+# Example (Backend):
+#   ./scripts/deploy.sh deployer-full-stack-practice backend full-stack-practice-backend-env backend backend-with-sg
+#
+# Example (Frontend):
+#   ./scripts/deploy.sh deployer-full-stack-practice frontend full-stack-practice-frontend-env frontend
+###############################################################################
+
+# Input arguments
+PROFILE="${1:-default}"      # AWS profile name
+APP_DIR="$2"                 # Directory path to the app (e.g., backend or frontend)
+ENV_NAME="$3"                # Elastic Beanstalk environment name
+APP_NAME="$4"                # Elastic Beanstalk application name
+CONFIG_NAME="${5:-}"         # Optional: saved config name for `eb create`
+
+# AWS settings
+REGION="us-east-1"
+PLATFORM="Docker"
 
 cd "$APP_DIR"
 
 echo "🔍 Checking if EB environment '$ENV_NAME' exists..."
 
-# Use --profile only if not running inside GitHub Actions
+# Determine CLI profile flags
 EB_PROFILE_FLAG=""
+AWS_CLI_PROFILE_ARGS=""
 if [[ "$PROFILE" != "default" && -z "${GITHUB_ACTIONS:-}" ]]; then
   EB_PROFILE_FLAG="--profile $PROFILE"
+  AWS_CLI_PROFILE_ARGS="--profile $PROFILE"
 fi
 
-# Always run eb init to make sure CLI is correctly configured
-echo "⚙️ Running eb init to configure local directory..."
-CONFIG_FILE=".elasticbeanstalk/config.yml"
-if [[ -f "$CONFIG_FILE" ]]; then
-  echo "🩹 Removing stale default_ec2_keyname..."
-  sed -i.bak '/default_ec2_keyname/d' "$CONFIG_FILE"
-fi
+# 🧹 Clean old EB CLI config to avoid drift
+echo "🧹 Removing old .elasticbeanstalk config..."
+rm -rf .elasticbeanstalk
 
-eb init \
+# ⚙️ Initialize EB CLI non-interactively
+echo "⚙️ Running eb init..."
+eb init "$APP_NAME" \
+  --platform "$PLATFORM" \
+  --region "$REGION" \
   $EB_PROFILE_FLAG \
-  --platform "Docker" \
-  --region "us-east-1" \
-  --keyname "" || {
-    echo "❌ eb init failed. Aborting."
-    exit 1
-}
+  --quiet
 
-if ! eb status "$ENV_NAME" $EB_PROFILE_FLAG &>/dev/null; then
-  echo "🌱 Creating new EB environment '$ENV_NAME'..."
-  eb create "$ENV_NAME" $EB_PROFILE_FLAG
-  eb use "$ENV_NAME" $EB_PROFILE_FLAG
+# 🌱 Create environment if it does not exist
+if ! aws elasticbeanstalk describe-environments \
+  --region "$REGION" \
+  --environment-names "$ENV_NAME" \
+  $AWS_CLI_PROFILE_ARGS \
+  | grep -q '"Status":'; then
+
+  echo "🌱 Creating EB environment '$ENV_NAME'..."
+  if [[ -n "$CONFIG_NAME" ]]; then
+    eb create "$ENV_NAME" --cfg "$CONFIG_NAME" $EB_PROFILE_FLAG
+  else
+    eb create "$ENV_NAME" $EB_PROFILE_FLAG
+  fi
 else
   echo "✅ Environment '$ENV_NAME' already exists."
-  eb use "$ENV_NAME" $EB_PROFILE_FLAG
 fi
 
+# 📌 Set the current environment
+eb use "$ENV_NAME" $EB_PROFILE_FLAG
+
+# 🚀 Deploy application
 echo "🚀 Deploying to '$ENV_NAME'..."
 eb deploy $EB_PROFILE_FLAG

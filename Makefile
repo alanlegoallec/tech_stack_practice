@@ -54,11 +54,11 @@ clean:
 
 deploy-frontend:
 	@echo "🚀 Deploying Frontend..."
-	@$(FRONTEND_DIR)/scripts/deploy.sh $(DEPLOY_PROFILE) $(FRONTEND_DIR) full-stack-practice-frontend-env
+	@$(FRONTEND_DIR)/scripts/deploy.sh $(DEPLOY_PROFILE) $(FRONTEND_DIR) full-stack-practice-frontend-env frontend
 
 deploy-backend:
 	@echo "🚀 Deploying Backend..."
-	@$(BACKEND_DIR)/scripts/deploy.sh $(DEPLOY_PROFILE) $(BACKEND_DIR) full-stack-practice-backend-env
+	@$(BACKEND_DIR)/scripts/deploy.sh $(DEPLOY_PROFILE) $(BACKEND_DIR) full-stack-practice-backend-env backend backend-with-sg
 
 init-rds:
 	@echo "🗄️ Initializing RDS database with schema and data at $$(grep ^RDS_DB_HOST .env | cut -d '=' -f2)..."
